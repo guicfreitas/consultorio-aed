@@ -3,6 +3,8 @@
 #define ORDEM 2
 
 typedef struct no No;
+typedef struct fila Fila;
+typedef struct paciente Paciente;
 
 struct no{
     int qtdeChaves;
@@ -10,6 +12,19 @@ struct no{
     No *nos[2 * ORDEM];
 
 };
+
+struct paciente{
+    char[50] nome;
+    char[50] dtNascimento;
+    char situacao;
+    int totaSessoes;
+};
+
+struct fila{
+  Paciente* inicio;
+  Paciente* fim;
+};
+
 
 No *criaNo();
 No* criaArvore();
@@ -431,4 +446,78 @@ int noCheio(No *no){
 
     return 0;
 
+}
+
+//METODOS FILA DE ESPERA
+
+Fila* criarFila(){
+  Fila* fila = (Fila*) malloc(sizeof(Fila));
+
+  fila->inicio = NULL;
+  fila->fim = NULL;
+
+  return fila;
+}
+
+void inserirFila(Fila* fila, int matricula){
+  Matricula* novoMat = (Matricula*) malloc(sizeof(Matricula));
+  novoMat->matricula = matricula;
+
+  if(fila->inicio == NULL){
+
+    fila->inicio = novoMat;
+    fila->fim = novoMat;
+    novoMat->prox = NULL;
+
+  }else{
+
+    fila->fim->prox = novoMat;
+    novoMat->prox = NULL;
+    fila->fim = novoMat;
+
+
+  }
+
+}
+int retirarFila(Fila* fila){
+
+  Matricula* matTemp;
+
+  if(FilaVazia(fila)!=1){
+
+    matTemp = fila->inicio;
+    int matRetirada = matTemp->matricula;
+    fila->inicio = fila->inicio->prox;
+    free(matTemp);
+
+    return matRetirada;
+
+  }else{
+
+    return -1;
+
+  }
+}
+int FilaVazia(Fila* fila){
+
+  if(fila->inicio==NULL){
+    return 1;
+  }else{
+    return  0;
+  }
+
+}
+void liberarFila(Fila* fila){
+  Matricula* atual = fila->inicio;
+  Matricula* atualTemp;
+ 
+    while(atual != NULL){
+
+      atualTemp=atual;
+      atual = atual->prox;
+      free(atualTemp);
+
+    }
+  
+  free(fila);
 }
