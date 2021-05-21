@@ -471,10 +471,13 @@ int main1() {
 
 
 Fila* criarFila(){
+    Fila *fila = malloc(sizeof *fila);
+
     fila->inicio = NULL;
     fila->fim = NULL;
     
     return fila;
+    
 }
 
 void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes){
