@@ -464,13 +464,17 @@ int main1() {
 
     //adicionou na arvore
     //gerou consultas
-
-    //cirar fila de espera 
     
-    /*fila->inicio = NULL;
+    //criar fila de espera
+    
+}
+
+
+Fila* criarFila(){
+    fila->inicio = NULL;
     fila->fim = NULL;
     
-    return fila;*/
+    return fila;
 }
 
 void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totaSessoes){
