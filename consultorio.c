@@ -6,6 +6,7 @@
 typedef struct no No;
 typedef struct fila Fila;
 typedef struct paciente Paciente;
+typedef struct terapeuta Terapeuta;
 
 struct no{
     int qtdeChaves;
@@ -16,17 +17,25 @@ struct no{
 
 struct paciente{
     char nome[50];
-    char dtNascimento[50];
+    char dtNascimento[10];
     char situacao; // A - em atendimento, E - em espera, F - abandono
     int totalSessoes; // total de sessoes realizadas
     Paciente* prox;
+};
+
+struct terapeuta{
+    char nome[50];
+    char classe; //A - aluno, P - profissional
+    int qtdeAtendidos; // numero de pacientes ja atendidos
+    int qtdeAtendimento; // numero de pacientes em atendimento
+    int qtdeSessoes; // quantidade de sessoes realizadas dos pacientes em atendimento
+
 };
 
 struct fila{
     Paciente* inicio;
     Paciente* fim;
 };
-
 
 No *criaNo();
 No* criaArvore();
@@ -477,7 +486,7 @@ Fila* criarFila(){
     fila->fim = NULL;
     
     return fila;
-    
+
 }
 
 void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes){
