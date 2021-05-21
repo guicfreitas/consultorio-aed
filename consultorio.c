@@ -17,8 +17,8 @@ struct no{
 struct paciente{
     char nome[50];
     char dtNascimento[50];
-    char situacao;
-    int totaSessoes;
+    char situacao; // A - em atendimento, E - em espera, F - abandono
+    int totalSessoes; // total de sessoes realizadas
     Paciente* prox;
 };
 
@@ -46,7 +46,7 @@ int chaveExisteNo(No *no, int chave);
 int ehFolha(No *no);
 int noCheio(No *no);
 Fila* criarFila();
-void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totaSessoes);
+void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes);
 int filaVazia(Fila* fila);
 Paciente* retirarFila(Fila* fila);
 void liberarFila(Fila* fila);
@@ -473,12 +473,12 @@ int main1() {
     return fila;*/
 }
 
-void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totaSessoes){
+void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes){
     Paciente* novoPaciente = (Paciente*) malloc(sizeof(Paciente));
     strcpy(novoPaciente->nome,nome);
     strcpy(novoPaciente->dtNascimento,dtNasc);
     novoPaciente->situacao = situacao;
-    novoPaciente->totaSessoes = totaSessoes;
+    novoPaciente->totalSessoes = totalSessoes;
     
     
     if(fila->inicio == NULL){
