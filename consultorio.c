@@ -213,6 +213,7 @@ No* elimina(No **arvore, int chave){
     if(indiceChave != -1){// a chave esta presente no no
         if(ehFolha(*arvore)){
             *arvore = removeChave(arvore, chave);
+            //verifica se desbalanceou
 
         }else{// a chave esta presente em um no interno
             // troca a chave a ser removida pelo maior dos menores
@@ -434,7 +435,7 @@ int noCheio(No *no){
 }
 
 
-int main {
+int main1() {
     // Gerou 40 terapeutas
     // Gerou 600 pacientes
 
