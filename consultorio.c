@@ -432,3 +432,40 @@ int noCheio(No *no){
     return 0;
 
 }
+
+
+int main {
+    // Gerou 40 terapeutas
+    // Gerou 600 pacientes
+
+    //adicionou na arvore
+    //gerou consultas
+
+    //cirar fila de espera 
+    
+    //verificar idade
+    //verificar classe
+
+    //verificar disponibilidade terapeuta 
+    //verificar disponibilidade horaio 
+    //verificar disponibilidade sala 
+
+    //inserir na fila de espera 
+
+    //guaradr a falta terapeuta
+    //guaradr a falta paciente
+    //verificar se falta = 3 ou 5 total
+
+    //se falta = 3 => remover nó paciente
+
+    //decrementar consultas que faltaram
+
+    //adicionar sessao final (quando transfere a sessao, vai pro final da fila)
+
+    //verificar lista de espera
+
+    //tirar da lista de espera 
+
+    
+    
+}
