@@ -9,6 +9,8 @@ typedef struct fila Fila;
 typedef struct paciente Paciente;
 typedef struct terapeuta Terapeuta;
 
+char nomes [10][50] = {"MARIA","ANA","JOAO","ANTONIO","DEBORA","FERNANDO","ANDRESSA","DOUGLAS","FABIO","CAROLINA"};
+
 struct no{
     int qtdeChaves;
     int chaves[(2 * ORDEM) - 1];
@@ -32,6 +34,7 @@ struct terapeuta{
     int qtdeAtendidos; // numero de pacientes ja atendidos
     int qtdeAtendimento; // numero de pacientes em atendimento
     int qtdeSessoes; // quantidade de sessoes realizadas dos pacientes em atendimento
+    Terapeuta* prox;
 
 };
 
@@ -72,6 +75,8 @@ void geraAno(Paciente* paciente);
 void geraDataNascimento(Paciente* paciente);
 void setSituacao(Paciente* paciente, char situacao);
 char getSituacao(Paciente* paciente);
+Terapeuta* geraTerapeuta();
+int gerarNumero(int min,int max);
 
 int main(){
     Paciente *paciente = malloc(sizeof(Paciente));
@@ -80,6 +85,7 @@ int main(){
     geraSituacao(paciente);
     printf("Data de nascimento: %s\nSituação: %c\n", paciente->dtNascimento, paciente->situacao);
 
+    Terapeuta tp = geraTerapeuta();
 
 //    No *arvore = criaArvore();
 //    int chave;
@@ -650,6 +656,30 @@ void setSituacao(Paciente* paciente, char situacao){
 char getSituacao(Paciente* paciente){
     // A - em atendimento, E - em espera, F - abandono
     return paciente->situacao;
+}
+
+int gerarNumero(int min,int max){
+    int random = 0;
+    
+    
+    random = (min + (rand()%max));
+    
+    return random;
+}
+
+Terapeuta* geraTerapeuta(){
+    Terapeuta* novoTerapeuta = (Terapeuta*) malloc (sizeof(Terapeuta));
+
+    char classe[2] = {'A','P','o'};
+    
+    strcpy(novoTerapeuta->nome,nomes[gerarNumero(0,10)]);
+    novoTerapeuta->qtdeAtendidos = 0 ;
+    novoTerapeuta->qtdeAtendimento = 0;
+    novoTerapeuta->qtdeSessoes = 0;
+    novoTerapeuta->classe = classe[gerarNumero(0,2)];
+    novoTerapeuta->prox = NULL;
+
+    return novoTerapeuta;
 }
 
 // // Gerou 40 terapeutas
