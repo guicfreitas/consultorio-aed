@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #define ORDEM 2
 
 typedef struct no No;
@@ -17,9 +18,11 @@ struct no{
 
 struct paciente{
     char nome[50];
-    char dtNascimento[10];
+    char dtNascimento[11];
     char situacao; // A - em atendimento, E - em espera, F - abandono
     int totalSessoes; // total de sessoes realizadas
+    int qtdFaltas;
+    int faltasConsecutivas;
     Paciente* prox;
 };
 
@@ -59,33 +62,50 @@ void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int tota
 int filaVazia(Fila* fila);
 Paciente* retirarFila(Fila* fila);
 void liberarFila(Fila* fila);
+int ehCrianca(Paciente* paciente);
+void gerenciaFaltasPaciente(Paciente* paciente, int faltou);
+void consultaRealizada(Paciente* paciente);
+int consultasRestantes(Paciente* paciente);
+void geraDia(Paciente* paciente);
+void geraMes(Paciente* paciente);
+void geraAno(Paciente* paciente);
+void geraDataNascimento(Paciente* paciente);
+void setSituacao(Paciente* paciente, char situacao);
+char getSituacao(Paciente* paciente);
 
 int main(){
-    No *arvore = criaArvore();
-    int chave;
-    int qtdeElementos;
-    
-    printf("Quantidade de elementos a serem inseridos: ");
-    scanf("%d", &qtdeElementos);
-    
-    for(int i = 0; i < qtdeElementos; i++){
-        scanf("%d", &chave);
-        insere(&arvore, chave);
-        imprime(arvore);
-        
-    }
-    
-    printf("Quantidade de elementos a serem removidos: ");
-    scanf("%d", &qtdeElementos);
-    
-    for(int i = 0; i < qtdeElementos; i++){
-        scanf("%d", &chave);
-        elimina(&arvore, chave);
-        imprime(arvore);
-        
-    }
-    
-    liberaArvore(arvore);
+    Paciente *paciente = malloc(sizeof(Paciente));
+    srand(time(NULL));
+    geraDataNascimento(paciente);
+    geraSituacao(paciente);
+    printf("Data de nascimento: %s\nSituação: %c\n", paciente->dtNascimento, paciente->situacao);
+
+
+//    No *arvore = criaArvore();
+//    int chave;
+//    int qtdeElementos;
+//
+//    printf("Quantidade de elementos a serem inseridos: ");
+//    scanf("%d", &qtdeElementos);
+//
+//    for(int i = 0; i < qtdeElementos; i++){
+//        scanf("%d", &chave);
+//        insere(&arvore, chave);
+//        imprime(arvore);
+//
+//    }
+//
+//    printf("Quantidade de elementos a serem removidos: ");
+//    scanf("%d", &qtdeElementos);
+//
+//    for(int i = 0; i < qtdeElementos; i++){
+//        scanf("%d", &chave);
+//        elimina(&arvore, chave);
+//        imprime(arvore);
+//
+//    }
+//
+//    liberaArvore(arvore);
     
     return 0;
     
@@ -467,18 +487,6 @@ int noCheio(No *no){
 
 //METODOS FILA DE ESPERA
 
-int main1() {
-    // Gerou 40 terapeutas
-    // Gerou 600 pacientes
-
-    //adicionou na arvore
-    //gerou consultas
-    
-    //criar fila de espera
-    
-}
-
-
 Fila* criarFila(){
     Fila *fila = malloc(sizeof *fila);
 
@@ -489,12 +497,14 @@ Fila* criarFila(){
 
 }
 
-void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes){
+void inserirFila(Fila* fila, char nome[], char situacao, int totalSessoes){
     Paciente* novoPaciente = (Paciente*) malloc(sizeof(Paciente));
     strcpy(novoPaciente->nome,nome);
-    strcpy(novoPaciente->dtNascimento,dtNasc);
-    novoPaciente->situacao = situacao;
+    geraDataNascimento(novoPaciente);
+    setSituacao(novoPaciente, situacao);
     novoPaciente->totalSessoes = totalSessoes;
+    novoPaciente->qtdFaltas = 0;
+    novoPaciente->faltasConsecutivas = 0;
     
     
     if(fila->inicio == NULL){
@@ -557,6 +567,90 @@ void liberarFila(Fila* fila){
     free(fila);
 }
 
+// METODOS PACIENTE
+
+int ehCrianca(Paciente* paciente){
+    // retorna 0 caso o paciente tenha 12 anos ou mais
+    // retorna 1 caso o paciente seja considerado infantil
+    int dia = ((paciente->dtNascimento[0] - 48) * 10) + paciente->dtNascimento[1] - 48;
+    int mes = ((paciente->dtNascimento[3] - 48) * 10) + paciente->dtNascimento[4] - 48;
+    int ano = ((paciente->dtNascimento[6] - 48) * 1000) + ((paciente->dtNascimento[7] - 48) * 100)
+            + ((paciente->dtNascimento[8] - 48) * 10) + paciente->dtNascimento[9] - 48;
+    time_t mytime;
+    mytime = time(NULL);
+    struct tm tm = *localtime(&mytime);
+    if(tm.tm_year + 1900 - ano <= 12){
+        if(tm.tm_mon + 1 == mes){
+            if(tm.tm_mday < dia){
+                return 1;
+            }
+        }else if(tm.tm_mon + 1 < mes){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void gerenciaFaltasPaciente(Paciente* paciente, int faltou){
+    // para registrar presença: faltou = 0
+    // para registrar falta: faltou = 1
+    if(faltou == 1){
+        paciente->qtdFaltas++;
+        paciente->faltasConsecutivas++;
+        if(paciente->faltasConsecutivas >= 3 || paciente->qtdFaltas >= 5){  // desistente
+            // TODO: chamar função que remove ou retornar algum valor
+        }
+    }else if(faltou == 0){
+        paciente->faltasConsecutivas = 0;
+    }
+}
+
+void consultaRealizada(Paciente* paciente){
+    paciente->totalSessoes--;
+}
+
+int consultasRestantes(Paciente* paciente){
+    return paciente->totalSessoes;
+}
+
+void geraDia(Paciente* paciente){
+    int aleatorio = (rand() % 31) + 1;
+    paciente->dtNascimento[0] = aleatorio / 10 + 48;
+    paciente->dtNascimento[1] = aleatorio % 10 + 48;
+    paciente->dtNascimento[2] = '/';
+}
+
+void geraMes(Paciente* paciente){
+    int aleatorio = (rand() % 12) + 1;
+    paciente->dtNascimento[3] = aleatorio / 10 + 48;
+    paciente->dtNascimento[4] = aleatorio % 10 + 48;
+    paciente->dtNascimento[5] = '/';
+}
+
+void geraAno(Paciente* paciente){
+    int aleatorio = (rand() % 60) + 1960;
+    paciente->dtNascimento[6] = aleatorio / 1000 + 48;
+    paciente->dtNascimento[7] = aleatorio % 1000 / 100 + 48;
+    paciente->dtNascimento[8] = aleatorio % 1000 % 100 / 10 + 48;
+    paciente->dtNascimento[9] = aleatorio % 1000 % 100 % 10 + 48;
+    paciente->dtNascimento[10] = '\0';
+}
+
+void geraDataNascimento(Paciente* paciente){
+    geraDia(paciente);
+    geraMes(paciente);
+    geraAno(paciente);
+}
+
+void setSituacao(Paciente* paciente, char situacao){
+    // A - em atendimento, E - em espera, F - abandono
+    paciente->situacao = situacao;
+}
+
+char getSituacao(Paciente* paciente){
+    // A - em atendimento, E - em espera, F - abandono
+    return paciente->situacao;
+}
 
 // // Gerou 40 terapeutas
     // Gerou 600 pacientes
