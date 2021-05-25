@@ -25,6 +25,7 @@ struct paciente{
     int totalSessoes; // total de sessoes realizadas
     int qtdFaltas;
     int faltasConsecutivas;
+    Terapeuta* terapeuta;
     Paciente* prox;
 };
 
@@ -680,6 +681,17 @@ Terapeuta* geraTerapeuta(){
     novoTerapeuta->prox = NULL;
 
     return novoTerapeuta;
+}
+
+void gerenciaAtendimentoTerapeuta(Terapeuta* tp, int situ){
+    // 0 - terapeuta faltou, 1 - cliente faltou
+    if(situ == 0){
+
+    }else{
+        
+    }
+
+
 }
 
 // // Gerou 40 terapeutas
