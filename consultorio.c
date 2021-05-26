@@ -22,16 +22,17 @@ struct paciente{
     char nome[50];
     char dtNascimento[11];
     char situacao; // A - em atendimento, E - em espera, F - abandono
-    int totalSessoes; // total de sessoes realizadas
+    int totalSessoes; // total de sessoes restantes
     int qtdFaltas;
     int faltasConsecutivas;
+    int horaConsulta; // hora agendada para o paciente entre 1 - 60, segunda-feira(1-12), terça-feira(13-24), ..., sexta-feira(49-60).
     Terapeuta* terapeuta;
     Paciente* prox;
 };
 
 struct terapeuta{
     char nome[50];
-    char classe; //A - aluno, P - profissional
+    char classe; // A - aluno, P - profissional
     int qtdeAtendidos; // numero de pacientes ja atendidos
     int qtdeAtendimento; // numero de pacientes em atendimento
     int qtdeSessoes; // quantidade de sessoes realizadas dos pacientes em atendimento
@@ -69,8 +70,11 @@ void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int tota
 int filaVazia(Fila* fila);
 Paciente* retirarFila(Fila* fila);
 void liberarFila(Fila* fila);
+Paciente* geraPaciente();
 int ehCrianca(Paciente* paciente);
+int disponibilidadeTerapeuta(Terapeuta* terapeuta);
 void gerenciaFaltasPaciente(Paciente* paciente, int faltou);
+void geraFaltaPaciente(Paciente* paciente);
 void consultaRealizada(Paciente* paciente);
 int consultasRestantes(Paciente* paciente);
 void geraDia(Paciente* paciente);
@@ -80,47 +84,25 @@ void geraDataNascimento(Paciente* paciente);
 void setSituacao(Paciente* paciente, char situacao);
 char getSituacao(Paciente* paciente);
 Terapeuta* geraTerapeuta();
-int gerarNumero(int min,int max);
+int geraNumero(int min,int max);
+void geraHorario();
+int disponibilidadeHorario(int hora);
+int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta);
+void gerenciaAtendimentoTerapeuta(Terapeuta* tp, int situ);
 
 int main(){
-    /*Paciente *paciente = malloc(sizeof(Paciente));
     srand(time(NULL));
-    geraDataNascimento(paciente);
-    geraSituacao(paciente);
-    printf("Data de nascimento: %s\nSituação: %c\n", paciente->dtNascimento, paciente->situacao);*/
-
-    Terapeuta* tp = geraTerapeuta();
-
-    No *arvore = criaArvore();
-    int chave;
-    int qtdeElementos;
-
-    printf("Quantidade de elementos a serem inseridos: ");
-    scanf("%d", &qtdeElementos);
-
-    for(int i = 0; i < qtdeElementos; i++){
-        printf("Chave a ser inserida: ");
-        scanf("%d", &chave);
-        insere(&arvore, chave);
-        imprime(arvore);
-
-    }
-
-    printf("Quantidade de elementos a serem removidos: ");
-    scanf("%d", &qtdeElementos);
-
-    for(int i = 0; i < qtdeElementos; i++){
-        printf("Chave a ser removida: ");
-        scanf("%d", &chave);
-        arvore = elimina(&arvore, chave);
-        imprime(arvore);
-
-    }
-
-    //liberaArvore(arvore);
-    
+    Paciente* paciente = geraPaciente();
+    printf("Nome: %s\n", paciente->nome);
+    printf("Data de nascimento: %s\n", paciente->dtNascimento);
+    printf("Quantidade de sessões restantes: %d\n", paciente->totalSessoes);
+    printf("Gerando faltas para esse paciente...\n");
+    geraFaltaPaciente(paciente);
+    printf("Quantidade total de faltas: %d\n", paciente->qtdFaltas);
+    printf("Quantidade de faltas consecutivas: %d\n", paciente->faltasConsecutivas);
+    Terapeuta* terapeuta = geraTerapeuta();
+    printf("Nome do terapeuta: %s\n", terapeuta->nome);
     return 0;
-    
 }
 
 No *criaNo(){
@@ -595,6 +577,7 @@ void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int tota
     }
     
 }
+
 int filaVazia(Fila* fila){
     
     if(fila->inicio==NULL){
@@ -604,6 +587,7 @@ int filaVazia(Fila* fila){
     }
     
 }
+
 Paciente* retirarFila(Fila* fila){
     
     Paciente* pacienteTemp;
@@ -641,6 +625,19 @@ void liberarFila(Fila* fila){
 
 // METODOS PACIENTE
 
+Paciente* geraPaciente(){
+    Paciente* novoPaciente = malloc(sizeof(Paciente));
+
+    strcpy(novoPaciente->nome,nomes[geraNumero(0,10)]);
+    geraDataNascimento(novoPaciente);
+    novoPaciente->totalSessoes = 20;
+    novoPaciente->qtdFaltas = novoPaciente->faltasConsecutivas = 0;
+    novoPaciente->terapeuta = NULL;
+    novoPaciente->prox = NULL;
+
+    return novoPaciente;
+}
+
 int ehCrianca(Paciente* paciente){
     // retorna 0 caso o paciente tenha 12 anos ou mais
     // retorna 1 caso o paciente seja considerado infantil
@@ -663,7 +660,6 @@ int ehCrianca(Paciente* paciente){
     return 0;
 }
 
-
 int disponibilidadeTerapeuta(Terapeuta* terapeuta){
 
     if(terapeuta->classe == 'A'){
@@ -681,8 +677,6 @@ int disponibilidadeTerapeuta(Terapeuta* terapeuta){
     
 }
 
-
-
 void gerenciaFaltasPaciente(Paciente* paciente, int faltou){
     // para registrar presença: faltou = 0
     // para registrar falta: faltou = 1
@@ -694,6 +688,14 @@ void gerenciaFaltasPaciente(Paciente* paciente, int faltou){
         }
     }else if(faltou == 0){
         paciente->faltasConsecutivas = 0;
+    }
+}
+
+void geraFaltaPaciente(Paciente* paciente){
+    int qtdFaltas = geraNumero(0,6);
+    paciente->qtdFaltas = qtdFaltas;
+    if(qtdFaltas == 3){
+        paciente->faltasConsecutivas = qtdFaltas;
     }
 }
 
@@ -744,20 +746,15 @@ char getSituacao(Paciente* paciente){
     return paciente->situacao;
 }
 
-int gerarNumero(int min,int max){
-    int random = 0;
-    
-    
-    random = (min + (rand()%max));
-    
-    return random;
+int geraNumero(int min,int max){
+    return (min + (rand()%max));
 }
 
 void geraHorario(){
     int hora, minuto, segundo;
-    hora = gerarNumero(hora, 24);
-    minuto = gerarNumero(minuto, 60);
-    segundo = gerarNumero(segundo, 60);
+    hora = geraNumero(hora, 24);
+    minuto = geraNumero(minuto, 60);
+    segundo = geraNumero(segundo, 60);
 }
 
 int disponibilidadeHorario(int hora){
@@ -782,11 +779,11 @@ Terapeuta* geraTerapeuta(){
 
     char classe[3] = {'A','P',''};
     
-    strcpy(novoTerapeuta->nome,nomes[gerarNumero(0,10)]);
+    strcpy(novoTerapeuta->nome,nomes[geraNumero(0,10)]);
     novoTerapeuta->qtdeAtendidos = 0 ;
     novoTerapeuta->qtdeAtendimento = 0;
     novoTerapeuta->qtdeSessoes = 0;
-    novoTerapeuta->classe = classe[gerarNumero(0,2)];
+    novoTerapeuta->classe = classe[geraNumero(0,2)];
     novoTerapeuta->prox = NULL;
 
     return novoTerapeuta;
