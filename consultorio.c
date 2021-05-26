@@ -35,6 +35,7 @@ struct terapeuta{
     int qtdeAtendidos; // numero de pacientes ja atendidos
     int qtdeAtendimento; // numero de pacientes em atendimento
     int qtdeSessoes; // quantidade de sessoes realizadas dos pacientes em atendimento
+    Paciente* pacientesVinculados[5];
     Terapeuta* prox;
 
 };
@@ -116,7 +117,7 @@ int main(){
 
     }
 
-    liberaArvore(arvore);
+    //liberaArvore(arvore);
     
     return 0;
     
@@ -779,7 +780,7 @@ int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta){
 Terapeuta* geraTerapeuta(){
     Terapeuta* novoTerapeuta = (Terapeuta*) malloc (sizeof(Terapeuta));
 
-    char classe[3] = {'A','P','o'};
+    char classe[3] = {'A','P',''};
     
     strcpy(novoTerapeuta->nome,nomes[gerarNumero(0,10)]);
     novoTerapeuta->qtdeAtendidos = 0 ;
@@ -791,12 +792,13 @@ Terapeuta* geraTerapeuta(){
     return novoTerapeuta;
 }
 
-void gerenciaAtendimentoTerapeuta(Terapeuta* tp, int situ){
+void gerenciaAtendimentoTerapeuta(Paciente pa,Terapeuta* tp, int situ){
     // 0 - terapeuta faltou, 1 - cliente faltou
     if(situ == 0){
+        pa->totalSessoes = pa->totalSessoes - 1
 
     }else{
-
+        gerenciaFaltasPaciente(pa, 1);
     }
 
 
