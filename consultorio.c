@@ -92,8 +92,8 @@ int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta);
 void gerenciaAtendimentoTerapeuta(Paciente *pa,Terapeuta* tp, int situ);
 
 int main(){
-    Paciente* paciente = geraPaciente();
     srand(time(NULL));
+    Paciente* paciente = geraPaciente();
     geraDataNascimento(paciente);
     geraSituacao(paciente);
     printf("Data de nascimento: %s\nSituação: %c\n", paciente->dtNascimento, paciente->situacao);
@@ -127,17 +127,7 @@ int main(){
     }
 
     //liberaArvore(arvore);
-    
-    
-    printf("Nome: %s\n", paciente->nome);
-    printf("Data de nascimento: %s\n", paciente->dtNascimento);
-    printf("Quantidade de sessões restantes: %d\n", paciente->totalSessoes);
-    printf("Gerando faltas para esse paciente...\n");
-    geraFaltaPaciente(paciente);
-    printf("Quantidade total de faltas: %d\n", paciente->qtdFaltas);
-    printf("Quantidade de faltas consecutivas: %d\n", paciente->faltasConsecutivas);
-    Terapeuta* terapeuta = geraTerapeuta();
-    printf("Nome do terapeuta: %s\n", terapeuta->nome);
+
     return 0;
 }
 
