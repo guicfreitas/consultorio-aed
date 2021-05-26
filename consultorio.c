@@ -814,7 +814,7 @@ Terapeuta* geraTerapeuta(){
 void geraFaltaTerapeuta(Paciente *pa,Terapeuta* tp){
     numero = geraNumero(0,10);
 
-    if(numero % 2 == 0){
+    if(numero == 1){
          pa->totalSessoes = pa->totalSessoes + 1;
     }
 
