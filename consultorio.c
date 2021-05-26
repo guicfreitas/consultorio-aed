@@ -64,7 +64,7 @@ int chaveExisteNo(No *no, int chave);
 int ehFolha(No *no);
 int noCheio(No *no);
 Fila* criarFila();
-void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes);
+void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes, int qtdFaltas, int faltasConsecutivas);
 int filaVazia(Fila* fila);
 Paciente* retirarFila(Fila* fila);
 void liberarFila(Fila* fila);
@@ -86,6 +86,37 @@ int main(){
     srand(time(NULL));
     geraDataNascimento(paciente);
     geraSituacao(paciente);
+<<<<<<< HEAD
+    printf("Data de nascimento: %s\nSituação: %c\n", paciente->dtNascimento, paciente->situacao);
+
+    Terapeuta* stp = geraTerapeuta();
+
+//    No *arvore = criaArvore();
+//    int chave;
+//    int qtdeElementos;
+//
+//    printf("Quantidade de elementos a serem inseridos: ");
+//    scanf("%d", &qtdeElementos);
+//
+//    for(int i = 0; i < qtdeElementos; i++){
+//        scanf("%d", &chave);
+//        insere(&arvore, chave);
+//        imprime(arvore);
+//
+//    }
+//
+//    printf("Quantidade de elementos a serem removidos: ");
+//    scanf("%d", &qtdeElementos);
+//
+//    for(int i = 0; i < qtdeElementos; i++){
+//        scanf("%d", &chave);
+//        elimina(&arvore, chave);
+//        imprime(arvore);
+//
+//    }
+//
+//    liberaArvore(arvore);
+=======
     printf("Data de nascimento: %s\nSituação: %c\n", paciente->dtNascimento, paciente->situacao);*/
 
     Terapeuta* tp = geraTerapeuta();
@@ -117,6 +148,7 @@ int main(){
     }
 
     liberaArvore(arvore);
+>>>>>>> a3b499f4d980c78a1d219fc412d463792af9e607
     
     return 0;
     
@@ -575,14 +607,14 @@ Fila* criarFila(){
 
 }
 
-void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes){
+void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes, int qtdFaltas, int faltasConsecutivas){
     Paciente* novoPaciente = (Paciente*) malloc(sizeof(Paciente));
     strcpy(novoPaciente->nome,nome);
-    geraDataNascimento(novoPaciente);
-    setSituacao(novoPaciente, situacao);
+    strcpy(novoPaciente->dtNascimento,dtNasc);
+    novoPaciente->situacao = situacao;
     novoPaciente->totalSessoes = totalSessoes;
-    novoPaciente->qtdFaltas = 0;
-    novoPaciente->faltasConsecutivas = 0;
+    novoPaciente->qtdFaltas = qtdFaltas;
+    novoPaciente->faltasConsecutivas = faltasConsecutivas;
     
     
     if(fila->inicio == NULL){
@@ -654,7 +686,7 @@ int ehCrianca(Paciente* paciente){
     int mes = ((paciente->dtNascimento[3] - 48) * 10) + paciente->dtNascimento[4] - 48;
     int ano = ((paciente->dtNascimento[6] - 48) * 1000) + ((paciente->dtNascimento[7] - 48) * 100)
             + ((paciente->dtNascimento[8] - 48) * 10) + paciente->dtNascimento[9] - 48;
-    time_t mytime;
+    time_t mytime; 
     mytime = time(NULL);
     struct tm tm = *localtime(&mytime);
     if(tm.tm_year + 1900 - ano <= 12){
@@ -670,7 +702,7 @@ int ehCrianca(Paciente* paciente){
 }
 
 
-int temDisponibilidade(Terapeuta* terapeuta){
+int disponibilidadeTerapeuta(Terapeuta* terapeuta){
 
     if(terapeuta->classe == 'A'){
         if(terapeuta->qtdeAtendimento == 3){
@@ -686,6 +718,8 @@ int temDisponibilidade(Terapeuta* terapeuta){
     return 0;
     
 }
+
+
 
 void gerenciaFaltasPaciente(Paciente* paciente, int faltou){
     // para registrar presença: faltou = 0
@@ -755,6 +789,30 @@ int gerarNumero(int min,int max){
     random = (min + (rand()%max));
     
     return random;
+}
+
+void geraHorario(){
+    int hora, minuto, segundo;
+    hora = gerarNumero(hora, 24);
+    minuto = gerarNumero(minuto, 60);
+    segundo = gerarNumero(segundo, 60);
+}
+
+int disponibilidadeHorario(int hora){
+    if(hora <= 9 || hora > 20){
+        printf("Consultório fechado");
+    }
+    return 0;
+}
+
+int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta){
+    //1 é profissional e 0 é aluno
+    if(terapeuta->classe == 'A'){
+        return 0;
+    }else{
+        return 1;
+    }
+
 }
 
 Terapeuta* geraTerapeuta(){
