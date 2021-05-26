@@ -89,7 +89,7 @@ int geraNumero(int min,int max);
 void geraHorario();
 int disponibilidadeHorario(int hora);
 int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta);
-void gerenciaAtendimentoTerapeuta(Terapeuta* tp, int situ);
+void gerenciaAtendimentoTerapeuta(Paciente *pa,Terapeuta* tp, int situ);
 
 int main(){
     Paciente* paciente = geraPaciente();
@@ -813,7 +813,7 @@ int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta){
 Terapeuta* geraTerapeuta(){
     Terapeuta* novoTerapeuta = (Terapeuta*) malloc (sizeof(Terapeuta));
 
-    char classe[3] = {'A','P',''};
+    char classe[3] = {'A','P',' '};
     
     strcpy(novoTerapeuta->nome,nomes[geraNumero(0,10)]);
     novoTerapeuta->qtdeAtendidos = 0 ;
@@ -825,10 +825,10 @@ Terapeuta* geraTerapeuta(){
     return novoTerapeuta;
 }
 
-void gerenciaAtendimentoTerapeuta(Paciente pa,Terapeuta* tp, int situ){
+void gerenciaAtendimentoTerapeuta(Paciente *pa,Terapeuta* tp, int situ){
     // 0 - terapeuta faltou, 1 - cliente faltou
     if(situ == 0){
-        pa->totalSessoes = pa->totalSessoes - 1
+        pa->totalSessoes = pa->totalSessoes - 1;
 
     }else{
         gerenciaFaltasPaciente(pa, 1);
