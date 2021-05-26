@@ -811,15 +811,12 @@ Terapeuta* geraTerapeuta(){
     return novoTerapeuta;
 }
 
-void gerenciaAtendimentoTerapeuta(Paciente *pa,Terapeuta* tp, int situ){
-    // 0 - terapeuta faltou, 1 - cliente faltou
-    if(situ == 0){
-        pa->totalSessoes = pa->totalSessoes - 1;
+void geraFaltaTerapeuta(Paciente *pa,Terapeuta* tp){
+    numero = geraNumero(0,10);
 
-    }else{
-        gerenciaFaltasPaciente(pa, 1);
+    if(numero % 2 == 0){
+         pa->totalSessoes = pa->totalSessoes + 1;
     }
-
 
 }
 
