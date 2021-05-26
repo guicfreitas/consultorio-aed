@@ -93,10 +93,6 @@ void gerenciaAtendimentoTerapeuta(Paciente *pa,Terapeuta* tp, int situ);
 
 int main(){
     srand(time(NULL));
-    Paciente* paciente = geraPaciente();
-    geraDataNascimento(paciente);
-    geraSituacao(paciente);
-    printf("Data de nascimento: %s\nSituação: %c\n", paciente->dtNascimento, paciente->situacao);
 
     Terapeuta* tp = geraTerapeuta();
 
