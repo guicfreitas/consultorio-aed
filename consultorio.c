@@ -25,6 +25,7 @@ struct paciente{
     int totalSessoes; // total de sessoes realizadas
     int qtdFaltas;
     int faltasConsecutivas;
+    Terapeuta* terapeuta;
     Paciente* prox;
 };
 
@@ -749,6 +750,24 @@ int ehCrianca(Paciente* paciente){
     return 0;
 }
 
+
+int temDisponibilidade(Terapeuta* terapeuta){
+
+    if(terapeuta->classe == 'A'){
+        if(terapeuta->qtdeAtendimento == 3){
+            //TODO: nao tem disponibilidade e tem que passar pra outro
+            return 1;
+        }
+    }else{
+         if(terapeuta->qtdeAtendimento == 5){
+            //TODO: nao tem disponibilidade e tem que passar pra outro
+            return 1;
+        }
+    }
+    return 0;
+    
+}
+
 void gerenciaFaltasPaciente(Paciente* paciente, int faltou){
     // para registrar presença: faltou = 0
     // para registrar falta: faltou = 1
@@ -832,6 +851,17 @@ Terapeuta* geraTerapeuta(){
     novoTerapeuta->prox = NULL;
 
     return novoTerapeuta;
+}
+
+void gerenciaAtendimentoTerapeuta(Terapeuta* tp, int situ){
+    // 0 - terapeuta faltou, 1 - cliente faltou
+    if(situ == 0){
+
+    }else{
+        
+    }
+
+
 }
 
 // // Gerou 40 terapeutas
