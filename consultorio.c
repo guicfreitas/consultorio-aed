@@ -86,37 +86,6 @@ int main(){
     srand(time(NULL));
     geraDataNascimento(paciente);
     geraSituacao(paciente);
-<<<<<<< HEAD
-    printf("Data de nascimento: %s\nSituação: %c\n", paciente->dtNascimento, paciente->situacao);
-
-    Terapeuta* stp = geraTerapeuta();
-
-//    No *arvore = criaArvore();
-//    int chave;
-//    int qtdeElementos;
-//
-//    printf("Quantidade de elementos a serem inseridos: ");
-//    scanf("%d", &qtdeElementos);
-//
-//    for(int i = 0; i < qtdeElementos; i++){
-//        scanf("%d", &chave);
-//        insere(&arvore, chave);
-//        imprime(arvore);
-//
-//    }
-//
-//    printf("Quantidade de elementos a serem removidos: ");
-//    scanf("%d", &qtdeElementos);
-//
-//    for(int i = 0; i < qtdeElementos; i++){
-//        scanf("%d", &chave);
-//        elimina(&arvore, chave);
-//        imprime(arvore);
-//
-//    }
-//
-//    liberaArvore(arvore);
-=======
     printf("Data de nascimento: %s\nSituação: %c\n", paciente->dtNascimento, paciente->situacao);*/
 
     Terapeuta* tp = geraTerapeuta();
@@ -148,7 +117,6 @@ int main(){
     }
 
     liberaArvore(arvore);
->>>>>>> a3b499f4d980c78a1d219fc412d463792af9e607
     
     return 0;
     
