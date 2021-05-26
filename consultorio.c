@@ -19,6 +19,7 @@ struct no{
 };
 
 struct paciente{
+    int id;
     char nome[50];
     char dtNascimento[11];
     char situacao; // A - em atendimento, E - em espera, F - abandono
@@ -116,7 +117,7 @@ int main(){
 
     }
 
-    liberaArvore(arvore);
+    //liberaArvore(arvore);
     
     return 0;
     
