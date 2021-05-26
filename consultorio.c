@@ -86,7 +86,7 @@ int main(){
     geraSituacao(paciente);
     printf("Data de nascimento: %s\nSituação: %c\n", paciente->dtNascimento, paciente->situacao);
 
-    Terapeuta tp = geraTerapeuta();
+    Terapeuta* tp = geraTerapeuta();
 
 //    No *arvore = criaArvore();
 //    int chave;
@@ -706,7 +706,7 @@ void gerenciaAtendimentoTerapeuta(Terapeuta* tp, int situ){
     if(situ == 0){
 
     }else{
-        
+
     }
 
 
