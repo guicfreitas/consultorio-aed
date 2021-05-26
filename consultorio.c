@@ -64,7 +64,7 @@ int chaveExisteNo(No *no, int chave);
 int ehFolha(No *no);
 int noCheio(No *no);
 Fila* criarFila();
-void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes);
+void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes, int qtdFaltas, int faltasConsecutivas);
 int filaVazia(Fila* fila);
 Paciente* retirarFila(Fila* fila);
 void liberarFila(Fila* fila);
@@ -656,14 +656,14 @@ Fila* criarFila(){
 
 }
 
-void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes){
+void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes, int qtdFaltas, int faltasConsecutivas){
     Paciente* novoPaciente = (Paciente*) malloc(sizeof(Paciente));
     strcpy(novoPaciente->nome,nome);
-    geraDataNascimento(novoPaciente);
-    setSituacao(novoPaciente, situacao);
+    strcpy(novoPaciente->dtNascimento,dtNasc);
+    novoPaciente->situacao = situacao;
     novoPaciente->totalSessoes = totalSessoes;
-    novoPaciente->qtdFaltas = 0;
-    novoPaciente->faltasConsecutivas = 0;
+    novoPaciente->qtdFaltas = qtdFaltas;
+    novoPaciente->faltasConsecutivas = faltasConsecutivas;
     
     
     if(fila->inicio == NULL){
