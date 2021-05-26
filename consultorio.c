@@ -267,7 +267,6 @@ void liberaArvore(No *arvore){
 
 No* elimina(No **arvore, int chave){
     int indiceChave = chaveExisteNo(*arvore, chave);
-    //printf("indiceChave = %d\n", indiceChave);
     
     if(indiceChave != -1){// a chave esta presente no no
         if(ehFolha(*arvore)){
@@ -322,8 +321,8 @@ No* elimina(No **arvore, int chave){
                     insereChave(arvore, irmaoEsquerdo->chaves[irmaoEsquerdo->qtdeChaves - 1]);
 
                     //passa o ponteiro de filho adequado do irmao para o filho a percorrer
-                    /*int i = (*arvore)->nos[indiceFilho]->qtdeChaves;
-                    while(i > 0){
+                    int i = (*arvore)->nos[indiceFilho]->qtdeChaves;
+                    while((i > 0)){
                         (*arvore)->nos[indiceFilho]->nos[i] = (*arvore)->nos[indiceFilho]->nos[i - 1];
 
                         i--;
@@ -331,14 +330,6 @@ No* elimina(No **arvore, int chave){
                     }
 
                     (*arvore)->nos[indiceFilho]->nos[0] = irmaoEsquerdo->nos[irmaoEsquerdo->qtdeChaves];
-
-                    (*arvore)->nos[indiceFilho]->nos[(*arvore)->nos[indiceFilho]->qtdeChaves] = irmaoDireito->nos[0];
-
-                    for(int i = 0; i < irmaoEsquerdo->qtdeChaves; i++){
-                        irmaoEsquerdo->nos[i] =  irmaoEsquerdo->nos[i + 1];
-
-
-                    }*/
                     
                     removeChave(&irmaoEsquerdo, irmaoEsquerdo->chaves[irmaoEsquerdo->qtdeChaves - 1]);
 
@@ -352,22 +343,20 @@ No* elimina(No **arvore, int chave){
                 
             }else if(irmaoDireito != NULL){
                 if(irmaoDireito->qtdeChaves >= ORDEM){
-                    //printf("organiza o irmao direito!!\n");
                     //desce a chave do pai para o filho a percorrer
                     insereChave(&((*arvore)->nos[indiceFilho]), (*arvore)->chaves[indiceFilho]);
+                    removeChave(arvore, (*arvore)->chaves[indiceFilho]);
                     
                     //sobe a menor chave do irmao direito para o pai
                     insereChave(arvore, irmaoDireito->chaves[0]);
 
                     //passa o ponteiro de filho adequado do irmao para o filho a percorrer
-                    /*(*arvore)->nos[indiceFilho]->nos[(*arvore)->nos[indiceFilho]->qtdeChaves] = irmaoDireito->nos[0];
+                    (*arvore)->nos[indiceFilho]->nos[(*arvore)->nos[indiceFilho]->qtdeChaves] = irmaoDireito->nos[0];
                     for(int i = 0; i < irmaoDireito->qtdeChaves; i++){
                         irmaoDireito->nos[i] =  irmaoDireito->nos[i + 1];
 
-
-                    }*/
-
-                    removeChave(arvore, (*arvore)->chaves[indiceFilho]);
+                    }
+                    
                     removeChave(&irmaoDireito, irmaoDireito->chaves[0]);
 
                     organizaFilhos(&((*arvore)->nos[indiceFilho]));
