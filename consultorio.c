@@ -888,7 +888,7 @@ int disponibilidadeHorario(int hora){
 
 int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta){
     //1 é profissional e 0 é aluno
-    if(terapeuta->classe = 'A'){
+    if(terapeuta->classe == 'A'){
         return 0;
     }else{
         return 1;
