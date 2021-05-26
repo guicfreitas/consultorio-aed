@@ -111,7 +111,7 @@ int main(){
     for(int i = 0; i < qtdeElementos; i++){
         printf("Chave a ser removida: ");
         scanf("%d", &chave);
-        elimina(&arvore, chave);
+        arvore = elimina(&arvore, chave);
         imprime(arvore);
 
     }
@@ -169,14 +169,12 @@ No* insere(No **raiz, int chave){
     
     if(chaveExisteNo(noParaInserir, chave) == -1){
         if(noCheio(*raiz)){
-            printf("no cheio!\n");
             No *novaRaiz = criaNo();
             
             novaRaiz->qtdeChaves = 0;
             novaRaiz->nos[0] = *raiz;
             
             *raiz = divide(&novaRaiz, 0);
-            //printf("divisao feita com sucesso\n");
             percorreInsere(&novaRaiz, chave);
             
         }else
@@ -195,7 +193,6 @@ No* percorreInsere(No **arvore, int chave){
         
     }else{
         int i = filhoAPercorrer(*arvore, chave);
-        //printf("filho a percorrer = %d\n", i);
         
         if(noCheio((*arvore)->nos[i])){ // verifica se o filho encontrado esta cheio
             divide(arvore, i);
@@ -270,14 +267,13 @@ void liberaArvore(No *arvore){
 
 No* elimina(No **arvore, int chave){
     int indiceChave = chaveExisteNo(*arvore, chave);
-    printf("indiceChave = %d\n", indiceChave);
+    //printf("indiceChave = %d\n", indiceChave);
     
     if(indiceChave != -1){// a chave esta presente no no
         if(ehFolha(*arvore)){
             *arvore = removeChave(arvore, chave);
 
         }else{// a chave esta presente em um no interno
-            printf("troca com o MDM!!\n");
             // troca a chave a ser removida pelo maior dos menores
             No *maiorDosMenores = (*arvore)->nos[indiceChave];
             No *menorDosMaiores = (*arvore)->nos[indiceChave + 1];
@@ -289,9 +285,6 @@ No* elimina(No **arvore, int chave){
                 (*arvore)->chaves[indiceChave] = maiorDosMenores->chaves[maiorDosMenores->qtdeChaves - 1]; //troca as informacoes
                 maiorDosMenores->chaves[maiorDosMenores->qtdeChaves - 1] = chave;
 
-                imprime(*arvore);
-                printf("\n");
-
                 elimina(&((*arvore)->nos[indiceChave]), chave);
                 
             }else if(menorDosMaiores->qtdeChaves >= ORDEM){
@@ -301,13 +294,11 @@ No* elimina(No **arvore, int chave){
                 (*arvore)->chaves[indiceChave] = menorDosMaiores->chaves[0]; //troca as informacoes
                 menorDosMaiores->chaves[0] = chave;
 
-                imprime(*arvore);
-                printf("\n");
-
                 elimina(&((*arvore)->nos[indiceChave + 1]), chave);
                 
             }else{
                 junta(arvore, indiceChave, indiceChave + 1);
+
                 elimina(arvore, chave);
                 
             }
@@ -316,23 +307,19 @@ No* elimina(No **arvore, int chave){
         
     }else{// encontrar qual o filho a ser percorrido
         int indiceFilho = filhoAPercorrer(*arvore, chave);
-        printf("filho a percorrer = %d\n", indiceFilho);
         
         if((*arvore)->nos[indiceFilho]->qtdeChaves == ORDEM - 1){ // precisa organizar a arvore antes de descer
-            printf("precisa organizar a arvore!!\n");
             No *irmaoEsquerdo = indiceFilho != 0 ? (*arvore)->nos[indiceFilho - 1] : NULL;
             No *irmaoDireito = indiceFilho != (*arvore)->qtdeChaves ? (*arvore)->nos[indiceFilho + 1] : NULL;
             
             if(irmaoEsquerdo != NULL){
                 if((irmaoEsquerdo->qtdeChaves >= ORDEM)){
-                    printf("organiza o irmao esquerdo!!\n");
                     //desce a chave do pai para o filho a percorrer
                     insereChave(&((*arvore)->nos[indiceFilho]), (*arvore)->chaves[indiceFilho - 1]);
                     removeChave(arvore, (*arvore)->chaves[indiceFilho - 1]);
                     
                     //sobe a maior chave do irmao esquerdo para o pai
                     insereChave(arvore, irmaoEsquerdo->chaves[irmaoEsquerdo->qtdeChaves - 1]);
-                    printf("maior valor do irmao esquerdo = %d\n", irmaoEsquerdo->chaves[irmaoEsquerdo->qtdeChaves - 1]);
 
                     //passa o ponteiro de filho adequado do irmao para o filho a percorrer
                     /*int i = (*arvore)->nos[indiceFilho]->qtdeChaves;
@@ -352,7 +339,6 @@ No* elimina(No **arvore, int chave){
 
 
                     }*/
-
                     
                     removeChave(&irmaoEsquerdo, irmaoEsquerdo->chaves[irmaoEsquerdo->qtdeChaves - 1]);
 
@@ -360,14 +346,13 @@ No* elimina(No **arvore, int chave){
                     
                     
                 }else{
-                    printf("junta com o irmao esquerdo!!\n");
                     *arvore = junta(arvore, indiceFilho, indiceFilho - 1);
                     
                 }
                 
             }else if(irmaoDireito != NULL){
                 if(irmaoDireito->qtdeChaves >= ORDEM){
-                    printf("organiza o irmao direito!!\n");
+                    //printf("organiza o irmao direito!!\n");
                     //desce a chave do pai para o filho a percorrer
                     insereChave(&((*arvore)->nos[indiceFilho]), (*arvore)->chaves[indiceFilho]);
                     
@@ -375,42 +360,27 @@ No* elimina(No **arvore, int chave){
                     insereChave(arvore, irmaoDireito->chaves[0]);
 
                     //passa o ponteiro de filho adequado do irmao para o filho a percorrer
-                    (*arvore)->nos[indiceFilho]->nos[(*arvore)->nos[indiceFilho]->qtdeChaves] = irmaoDireito->nos[0];
+                    /*(*arvore)->nos[indiceFilho]->nos[(*arvore)->nos[indiceFilho]->qtdeChaves] = irmaoDireito->nos[0];
                     for(int i = 0; i < irmaoDireito->qtdeChaves; i++){
                         irmaoDireito->nos[i] =  irmaoDireito->nos[i + 1];
 
 
-                    }
+                    }*/
 
                     removeChave(arvore, (*arvore)->chaves[indiceFilho]);
                     removeChave(&irmaoDireito, irmaoDireito->chaves[0]);
 
                     organizaFilhos(&((*arvore)->nos[indiceFilho]));
                     
-                    
-                }else{
-                    printf("junta com o irmao direito!!\n");
+                }else
                     *arvore = junta(arvore, indiceFilho, indiceFilho + 1);
-                    
-                }
                 
             }
 
-            printf("teste1\n");
-            imprime(*arvore);
-            printf("\n");
-
             elimina(arvore, chave);
             
-        }else{
+        }else
             elimina(&((*arvore)->nos[indiceFilho]), chave);
-        }
-        
-        imprime(*arvore);
-        printf("\n");
-
-        //elimina(&((*arvore)->nos[indiceFilho]), chave);
-        
         
     }
     
@@ -418,92 +388,42 @@ No* elimina(No **arvore, int chave){
     
 }
 
-No* junta(No **pai, int indiceFilhoChave, int indiceIrmao){ // 1 0
-    //transfere chave do pai que separa os irmaos para (*pai)->nos[indiceIrmao]
-    int indiceChavePai = indiceFilhoChave < indiceIrmao ? indiceFilhoChave : indiceIrmao; //0
+No* junta(No **pai, int indiceFilhoChave, int indiceIrmao){
+    int indiceChavePai = indiceFilhoChave < indiceIrmao ? indiceFilhoChave : indiceIrmao;
     int qtdeChavesRestantes, indiceFilhosTransferidos;
 
-    imprime(*pai);
-    printf("\n");
-
+    //transfere chave do pai que separa os irmaos para (*pai)->nos[indiceIrmao]
     insereChave(&((*pai)->nos[indiceIrmao]), (*pai)->chaves[indiceChavePai]);
-
-    imprime(*pai);
-    printf("\n");
     
     //transfere as chaves restantes de (*pai)->nos[indiceFilhoChave] para (*pai)->nos[indiceIrmao]
     qtdeChavesRestantes = (*pai)->nos[indiceFilhoChave]->qtdeChaves;
     while(qtdeChavesRestantes > 0){
         insereChave(&((*pai)->nos[indiceIrmao]), (*pai)->nos[indiceFilhoChave]->chaves[0]);
-        //(*pai)->nos[indiceIrmao]->nos[(*pai)->nos[indiceIrmao]->qtdeChaves + 1] = (*pai)->nos[indiceFilhoChave]->nos[(*pai)->nos[indiceFilhoChave]->qtdeChaves];
-        
-        //imprime(*pai);
-        
-        //(*pai)->nos[indiceFilhoChave] = removeChave(&((*pai)->nos[indiceFilhoChave]), (*pai)->nos[indiceFilhoChave]->chaves[0]);
-        //imprime(*pai);
-        //printf("transferiu as chaves pro irmao!!!\n");
         
         qtdeChavesRestantes--;
         
     }
 
-    imprime(*pai);
-    printf("\n");
-
-    for(int i = 0; i <= (*pai)->nos[indiceFilhoChave]->qtdeChaves; i++){
+    for(int i = 0; i <= (*pai)->nos[indiceFilhoChave]->qtdeChaves; i++)
         insereNo(&((*pai)->nos[indiceIrmao]), (*pai)->nos[indiceFilhoChave]->nos[i]);
-
-    }
-
-    /*qtdeChavesRestantes = (*pai)->nos[indiceFilhoChave]->qtdeChaves + 1;
-    indiceFilhosTransferidos = 0;
-    while(qtdeChavesRestantes < 2 * ORDEM){ //transfere os filhos de um irmao para o outro
-        (*pai)->nos[indiceIrmao]->nos[qtdeChavesRestantes] = (*pai)->nos[indiceFilhoChave]->nos[indiceFilhosTransferidos];
-
-        qtdeChavesRestantes++;
-        indiceFilhosTransferidos++;
-
-    }
-    imprime(*pai);
-    printf("\n");*/
 
     qtdeChavesRestantes = (*pai)->nos[indiceFilhoChave]->qtdeChaves;
     while(qtdeChavesRestantes > 0){
         removeChave(&((*pai)->nos[indiceFilhoChave]), (*pai)->nos[indiceFilhoChave]->chaves[0]);
-        printf("transferiu as chaves pro irmao!!!\n");
         
         qtdeChavesRestantes--;
         
     }
-
-    imprime(*pai);
-    printf("\n");
-
-    /*for(int i = 0; i < (*pai)->qtdeChaves; i++){
-        if((*pai)->nos[i]->qtdeChaves == 0 || ((*pai)->nos[i] == NULL)){
-            (*pai)->nos[i] = (*pai)->nos[i + 1];
-
-        }
-
-    }*/
     
     if((*pai)->qtdeChaves == 1){
         No *auxPai = (*pai)->nos[indiceIrmao];
         removeChave(pai, (*pai)->chaves[indiceChavePai]);
         *pai = auxPai;
 
-    }else{
+    }else
         removeChave(pai, (*pai)->chaves[indiceChavePai]);
 
-    }
-
     organizaFilhos(pai);
-    
-    //libera o filho que continha a chave a ser removida
-    //free((*pai)->nos[indiceFilhoChave]);
-    printf("teste2\n");
-    imprime(*pai);
-    printf("\n");
     
     return *pai;
     
@@ -528,11 +448,10 @@ No* removeChave(No **no, int chave){
     
     (*no)->qtdeChaves--;
     
-    if((*no)->qtdeChaves == 0){
-        //free(*no);
+    if((*no)->qtdeChaves == 0)
         return NULL;
         
-    }else
+    else
         return *no;
     
 }
