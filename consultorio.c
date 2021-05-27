@@ -84,7 +84,9 @@ void geraAno(Paciente* paciente);
 void geraDataNascimento(Paciente* paciente);
 void setSituacao(Paciente* paciente, char situacao);
 char getSituacao(Paciente* paciente);
-Terapeuta* geraTerapeuta();
+Terapeuta* geraTerapeuta(char classe);
+void insereTerapeuta(Terapeuta* inicio, Terapeuta* novo);
+Terapeuta* iniciaListaTerapeuta();
 int geraNumero(int min,int max);
 void geraHorario();
 int disponibilidadeHorario(int hora);
@@ -94,7 +96,7 @@ void gerenciaAtendimentoTerapeuta(Paciente *pa,Terapeuta* tp, int situ);
 int main(){
     srand(time(NULL));
 
-    Terapeuta* tp = geraTerapeuta();
+    Terapeuta* terapeuta = iniciaListaTerapeuta();
 
     No *arvore = criaArvore();
     int chave;
@@ -236,7 +238,7 @@ No* divide(No **pai, int indiceFilho){
     (*pai)->nos[indiceFilho + 1] = no;
     
     for(int i = (*pai)->qtdeChaves; i > indiceFilho; i--)
-        (*pai)->chaves[i] = (*pai)->chaves[i - 1]; ///shift nas chaves
+        (*pai)->chaves[i] = (*pai)->chaves[i - 1]; //shift nas chaves
     
     (*pai)->chaves[indiceFilho] = (*pai)->nos[indiceFilho]->chaves[ORDEM - 1];
     (*pai)->qtdeChaves++;
@@ -796,19 +798,39 @@ int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta){
 
 }
 
-Terapeuta* geraTerapeuta(){
+Terapeuta* geraTerapeuta(char classe){
     Terapeuta* novoTerapeuta = (Terapeuta*) malloc (sizeof(Terapeuta));
 
-    char classe[3] = {'A','P',' '};
+    // char classe[3] = {'A','P',' '};
     
     strcpy(novoTerapeuta->nome,nomes[geraNumero(0,10)]);
     novoTerapeuta->qtdeAtendidos = 0 ;
     novoTerapeuta->qtdeAtendimento = 0;
     novoTerapeuta->qtdeSessoes = 0;
-    novoTerapeuta->classe = classe[geraNumero(0,2)];
+    novoTerapeuta->classe = classe;
     novoTerapeuta->prox = NULL;
 
     return novoTerapeuta;
+}
+
+void insereTerapeuta(Terapeuta* inicio, Terapeuta* novo){
+    aux = inicio;
+    while(aux->prox != NULL){
+        aux = terapeuta->prox;
+    }
+    aux->prox = novo;
+}
+
+Terapeuta* iniciaListaTerapeuta(){
+    Terapeuta* terapeuta = geraTerapeuta('P');  // Criando uma lista de terapeutas
+    for(int i = 2; i < 40; i++){
+        if(i % 3 != 0){
+            insereTerapeuta(terapeuta, geraTerapeuta('P'));
+        }else{
+            insereTerapeuta(terapeuta, geraTerapeuta('A'));
+        }
+    }
+    return terapeuta;
 }
 
 void geraFaltaTerapeuta(Paciente *pa,Terapeuta* tp){
