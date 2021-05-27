@@ -8,6 +8,7 @@ typedef struct no No;
 typedef struct fila Fila;
 typedef struct paciente Paciente;
 typedef struct terapeuta Terapeuta;
+typedef struct consultorio Consultorio;
 
 char nomes [10][50] = {"MARIA","ANA","JOAO","ANTONIO","DEBORA","FERNANDO","ANDRESSA","DOUGLAS","FABIO","CAROLINA"};
 
@@ -47,6 +48,12 @@ struct fila{
     Paciente* fim;
 };
 
+struct consultorio{
+    int id;
+    int horarios[12]; // horarios[i] == 0 indica horario vazio, horarios[i] == 1 indica horario cheio
+
+};
+
 No *criaNo();
 No* criaArvore();
 No* buscaChave(No *arvore, int chave);
@@ -66,6 +73,7 @@ void liberaArvore(No *arvore);
 int chaveExisteNo(No *no, int chave);
 int ehFolha(No *no);
 int noCheio(No *no);
+Consultorio* criaConsultorio(int id);
 Fila* criarFila();
 void inserirFila(Fila* fila, char nome[], char dtNasc[], char situacao, int totalSessoes, int qtdFaltas, int faltasConsecutivas);
 int filaVazia(Fila* fila);
@@ -95,6 +103,18 @@ int main(){
     srand(time(NULL));
 
     Terapeuta* tp = geraTerapeuta();
+    Consultorio *consultorios[6];
+
+    for(int i = 0; i < 6; i++)
+        consultorios[i] = criaConsultorio(i + 1);
+
+    for(int i = 0; i < 6; i++){
+        printf("Consultorio %d\n", consultorios[i]->id);
+        
+        for(int j = 0; j < 12; j++)
+            printf("primeiro horario: %d\n", consultorios[i]->horarios[j]);
+
+    }
 
     No *arvore = criaArvore();
     int chave;
@@ -561,6 +581,18 @@ int noCheio(No *no){
     
 }
 
+Consultorio* criaConsultorio(int id){
+    Consultorio *consultorio = malloc(sizeof *consultorio);
+
+    consultorio->id = id;
+
+    for(int i = 0; i < 12; i++)
+        consultorio->horarios[i] = 0; //inicializa todos os horários vazios
+    
+    return consultorio;
+
+}
+
 //METODOS FILA DE ESPERA
 
 Fila* criarFila(){
@@ -812,7 +844,7 @@ Terapeuta* geraTerapeuta(){
 }
 
 void geraFaltaTerapeuta(Paciente *pa,Terapeuta* tp){
-    numero = geraNumero(0,10);
+    int numero = geraNumero(0,10);
 
     if(numero == 1){
          pa->totalSessoes = pa->totalSessoes + 1;
