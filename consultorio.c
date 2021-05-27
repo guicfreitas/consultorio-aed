@@ -131,7 +131,6 @@ int main(){
         printf("Chave a ser removida: ");
         scanf("%d", &chave);
         arvore = elimina(&arvore, chave);
-        
 
     }
 
