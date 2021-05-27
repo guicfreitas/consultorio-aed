@@ -847,6 +847,7 @@ void geraHorario(){
 int disponibilidadeHorario(int hora){
     if(hora <= 9 || hora > 20){
         printf("Consultório fechado");
+        return 1;
     }
     return 0;
 }
@@ -858,6 +859,23 @@ int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta){
     }else{
         return 1;
     }
+
+}
+void disponibilidadeTerapeuta(Terapeuta* terapeuta){
+    int tp;
+    tp = checaTerapeutaAlunoProfissional(terapeuta);
+
+    if(tp == 0){
+        if(terapeuta->qtdeAtendimento == 2){
+            return 1; // nao pode atender mais
+        }
+
+    }else{
+        if(terapeuta->qtdeAtendimento == 5){
+            return 1; // nao poder atender mais
+        }
+    }
+    return 0;
 
 }
 
