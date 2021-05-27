@@ -861,7 +861,7 @@ int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta){
     }
 
 }
-void disponibilidadeTerapeuta(Terapeuta* terapeuta){
+int disponibilidadeTerapeuta(Terapeuta* terapeuta){
     int tp;
     tp = checaTerapeutaAlunoProfissional(terapeuta);
 
