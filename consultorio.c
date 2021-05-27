@@ -106,7 +106,7 @@ void gerenciaAtendimentoTerapeuta(Paciente *pa,Terapeuta* tp, int situ);
 int main(){
     srand(time(NULL));
 
-    Terapeuta* tp = geraTerapeuta();
+    Terapeuta* terapeuta = iniciaListaTerapeuta();
     Consultorio *consultorios[6];
 
     for(int i = 0; i < 6; i++)
@@ -877,9 +877,9 @@ Terapeuta* geraTerapeuta(char classe){
 }
 
 void insereTerapeuta(Terapeuta* inicio, Terapeuta* novo){
-    aux = inicio;
+    Terapeuta* aux = inicio;
     while(aux->prox != NULL){
-        aux = terapeuta->prox;
+        aux = aux->prox;
     }
     aux->prox = novo;
 }
