@@ -15,6 +15,7 @@ char nomes [10][50] = {"MARIA","ANA","JOAO","ANTONIO","DEBORA","FERNANDO","ANDRE
 struct no{
     int qtdeChaves;
     int chaves[(2 * ORDEM) - 1];
+    Paciente *pacientes[(2 * ORDEM) - 1];
     No *nos[2 * ORDEM];
     
 };
@@ -57,14 +58,14 @@ struct consultorio{
 No *criaNo();
 No* criaArvore();
 No* buscaChave(No *arvore, int chave);
-No* insere(No **raiz, int chave);
-No* percorreInsere(No **arvore, int chave);
+No* insere(No **raiz, Paciente *paciente, int chave);
+No* percorreInsere(No **arvore, Paciente *paciente, int chave);
 No* divide(No **pai, int indiceFilho);
 No* elimina(No **arvore, int chave);
 No* percorreRemove(No **arvore, int chave);
 No* junta(No **pai, int indiceFilhoChave, int indiceIrmao);
 No* removeChave(No **no, int chave);
-No* insereChave(No **no, int chave);
+No* insereChave(No **no, Paciente *paciente, int chave);
 No* insereNo(No **no, No *noAInserir);
 No* organizaFilhos(No **no);
 int filhoAPercorrer(No *no, int chave);
@@ -79,7 +80,8 @@ void inserirFila(Fila* fila, Paciente* p);
 int filaVazia(Fila* fila);
 Paciente* retirarFila(Fila* fila);
 void liberarFila(Fila* fila);
-Paciente* geraPaciente();
+Paciente* geraPaciente(int id);
+void imprimePaciente(Paciente *paciente);
 int ehCrianca(Paciente* paciente);
 int disponibilidadeTerapeuta(Terapeuta* terapeuta);
 void gerenciaFaltasPaciente(Paciente* paciente, int faltou);
@@ -108,30 +110,31 @@ int main(){
     for(int i = 0; i < 6; i++)
         consultorios[i] = criaConsultorio(i + 1);
 
-    for(int i = 0; i < 6; i++){
+    /*for(int i = 0; i < 6; i++){
         printf("Consultorio %d\n", consultorios[i]->id);
         
         for(int j = 0; j < 12; j++)
             printf("primeiro horario: %d\n", consultorios[i]->horarios[j]);
 
-    }
+    }*/
 
     No *arvore = criaArvore();
     int chave;
     int qtdeElementos;
 
-    printf("Quantidade de elementos a serem inseridos: ");
+    printf("Quantidade de pacientes a serem inseridos: ");
     scanf("%d", &qtdeElementos);
 
     for(int i = 0; i < qtdeElementos; i++){
-        printf("Chave a ser inserida: ");
-        scanf("%d", &chave);
-        insere(&arvore, chave);
-        imprime(arvore);
+        //printf("Chave a ser inserida: ");
+        insere(&arvore, geraPaciente(i + 1), i + 1);
+        //imprime(arvore);
 
     }
 
-    printf("Quantidade de elementos a serem removidos: ");
+    imprime(arvore);
+
+    /*printf("Quantidade de elementos a serem removidos: ");
     scanf("%d", &qtdeElementos);
 
     for(int i = 0; i < qtdeElementos; i++){
@@ -140,7 +143,7 @@ int main(){
         arvore = elimina(&arvore, chave);
         imprime(arvore);
 
-    }
+    }*/
 
     //liberaArvore(arvore);
 
@@ -189,7 +192,7 @@ No* buscaChave(No *arvore, int chave){
     
 }
 
-No* insere(No **raiz, int chave){
+No* insere(No **raiz, Paciente *paciente, int chave){
     No *noParaInserir = buscaChave(*raiz, chave);
     
     if(chaveExisteNo(noParaInserir, chave) == -1){
@@ -200,10 +203,10 @@ No* insere(No **raiz, int chave){
             novaRaiz->nos[0] = *raiz;
             
             *raiz = divide(&novaRaiz, 0);
-            percorreInsere(&novaRaiz, chave);
+            percorreInsere(&novaRaiz, paciente, chave);
             
         }else
-            percorreInsere(raiz, chave);
+            percorreInsere(raiz, paciente, chave);
         
     }else
         printf("Chave ja existe, nao eh possivel inserir!\n");
@@ -212,9 +215,9 @@ No* insere(No **raiz, int chave){
     
 }
 
-No* percorreInsere(No **arvore, int chave){
+No* percorreInsere(No **arvore, Paciente *paciente, int chave){
     if(ehFolha(*arvore)){ // encontrou a folha a inserir
-        insereChave(arvore, chave);
+        insereChave(arvore, paciente, chave);
         
     }else{
         int i = filhoAPercorrer(*arvore, chave);
@@ -226,7 +229,7 @@ No* percorreInsere(No **arvore, int chave){
             
         }
         
-        percorreInsere(&((*arvore)->nos[i]), chave);
+        percorreInsere(&((*arvore)->nos[i]), paciente, chave);
         
     }
     
@@ -239,8 +242,11 @@ No* divide(No **pai, int indiceFilho){
     
     no->qtdeChaves = ORDEM - 1;
     
-    for(int i = 0; i < ORDEM - 1; i++)
+    for(int i = 0; i < ORDEM - 1; i++){
         no->chaves[i] = (*pai)->nos[indiceFilho]->chaves[i + ORDEM];
+        no->pacientes[i] = (*pai)->nos[indiceFilho]->pacientes[i + ORDEM];
+
+    }
     
     if(!ehFolha((*pai)->nos[indiceFilho])){
         for(int i = 0; i < ORDEM; i++)
@@ -255,10 +261,14 @@ No* divide(No **pai, int indiceFilho){
     
     (*pai)->nos[indiceFilho + 1] = no;
     
-    for(int i = (*pai)->qtdeChaves; i > indiceFilho; i--)
+    for(int i = (*pai)->qtdeChaves; i > indiceFilho; i--){
         (*pai)->chaves[i] = (*pai)->chaves[i - 1]; ///shift nas chaves
+        (*pai)->pacientes[i] = (*pai)->pacientes[i - 1];
+
+    }
     
     (*pai)->chaves[indiceFilho] = (*pai)->nos[indiceFilho]->chaves[ORDEM - 1];
+    (*pai)->pacientes[indiceFilho] = (*pai)->nos[indiceFilho]->pacientes[ORDEM - 1];
     (*pai)->qtdeChaves++;
     
     return *pai;
@@ -267,10 +277,12 @@ No* divide(No **pai, int indiceFilho){
 
 void imprime(No *arvore){
     if(arvore != NULL){
-        for(int i = 0; i < arvore->qtdeChaves; i++)
-            printf("| %d ", arvore->chaves[i]);
-        
-        printf("|\n");
+        for(int i = 0; i < arvore->qtdeChaves; i++){
+            printf("Paciente %d\n", arvore->chaves[i]);
+            imprimePaciente(arvore->pacientes[i]);
+            printf("\n");
+
+        }
         
         for(int i = 0; i < arvore->qtdeChaves + 1; i++)
             imprime(arvore->nos[i]);
@@ -290,7 +302,7 @@ void liberaArvore(No *arvore){
     
 }
 
-No* elimina(No **arvore, int chave){
+/*No* elimina(No **arvore, int chave){
     int indiceChave = chaveExisteNo(*arvore, chave);
     
     if(indiceChave != -1){// a chave esta presente no no
@@ -445,7 +457,7 @@ No* junta(No **pai, int indiceFilhoChave, int indiceIrmao){
     
     return *pai;
     
-}
+}*/
 
 No* removeChave(No **no, int chave){
     int indiceChave = chaveExisteNo(*no, chave);
@@ -474,16 +486,18 @@ No* removeChave(No **no, int chave){
     
 }
 
-No* insereChave(No **no, int chave){
+No* insereChave(No **no, Paciente *paciente, int chave){
     int i = (*no)->qtdeChaves;
     
     while((i > 0) && (chave < (*no)->chaves[i - 1])){ // encontra a posicao onde se deve inserir a chave
         (*no)->chaves[i] = (*no)->chaves[i - 1];
+        (*no)->pacientes[i] = (*no)->pacientes[i - 1];
         i--;
         
     }
     
     (*no)->chaves[i] = chave;
+    (*no)->pacientes[i] = paciente;
     
     (*no)->qtdeChaves++;
     
@@ -679,9 +693,10 @@ void liberarFila(Fila* fila){
 
 // METODOS PACIENTE
 
-Paciente* geraPaciente(){
+Paciente* geraPaciente(int id){
     Paciente* novoPaciente = malloc(sizeof(Paciente));
 
+    novoPaciente->id = id;
     strcpy(novoPaciente->nome,nomes[geraNumero(0,10)]);
     geraDataNascimento(novoPaciente);
     novoPaciente->totalSessoes = 20;
@@ -690,6 +705,16 @@ Paciente* geraPaciente(){
     novoPaciente->prox = NULL;
 
     return novoPaciente;
+}
+
+void imprimePaciente(Paciente *paciente){
+    printf("Nome: %s\n", paciente->nome);
+    printf("Data de nascimento: %s\n", paciente->dtNascimento);
+    printf("Total de sessoes: %d\n", paciente->totalSessoes);
+    printf("Quantidade de faltas: %d\n", paciente->qtdFaltas);
+    printf("Total de sessoes: %d\n", paciente->totalSessoes);
+    printf("Faltas consecutivas: %d\n", paciente->faltasConsecutivas);
+
 }
 
 int ehCrianca(Paciente* paciente){
