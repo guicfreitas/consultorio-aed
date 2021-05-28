@@ -76,6 +76,7 @@ int ehFolha(No *no);
 int noCheio(No *no);
 Consultorio* criaConsultorio(int id);
 Fila* criarFila();
+void imprimeFila(Fila *fila);
 void inserirFila(Fila* fila, Paciente* p);
 int filaVazia(Fila* fila);
 Paciente* retirarFila(Fila* fila);
@@ -86,7 +87,10 @@ void imprimeTerapeuta(Terapeuta* terapeuta);
 int ehCrianca(Paciente* paciente);
 int disponibilidadeTerapeuta(Terapeuta* terapeuta);
 void gerenciaFaltasPaciente(Paciente* paciente, int faltou);
-void geraFaltaPaciente(Paciente* paciente);
+void geraFaltaPaciente(Paciente *paciente);
+void faltaPaciente(Paciente* paciente);
+No* atribuiFaltasPaciente(No *arvore);
+No* atribuiFaltasTerapeuta(No *arvore);
 void consultaRealizada(Paciente* paciente);
 int consultasRestantes(Paciente* paciente);
 void geraDia(Paciente* paciente);
@@ -103,13 +107,15 @@ int geraNumero(int min,int max);
 void geraHorario();
 int disponibilidadeHorario(Consultorio* consultorio);
 int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta);
-void geraFaltaTerapeuta(Paciente *pa,Terapeuta* tp);
+void geraFaltaTerapeuta(Paciente *pa);
+int consultorioDisponivel(Consultorio** consultorios);
 
 int main(){
     srand(time(NULL));
 
-    Terapeuta* terapeuta = iniciaListaTerapeuta();
+    Terapeuta* terapeutas = iniciaListaTerapeuta();
     Consultorio *consultorios[6];
+    Fila *filaDeEspera = criarFila();
 
     for(int i = 0; i < 6; i++)
         consultorios[i] = criaConsultorio(i + 1);
@@ -122,14 +128,27 @@ int main(){
     scanf("%d", &qtdeElementos);
 
     for(int i = 0; i < qtdeElementos; i++){
+        Terapeuta *terapeuta = buscaTerapeuta(terapeutas);
         Paciente *novoPaciente = geraPaciente(i + 1);
-        novoPaciente->terapeuta = buscaTerapeuta(terapeuta);
-        if(novoPaciente->terapeuta != NULL && consultorioDisponivel(*consultorios)){
+
+        novoPaciente->terapeuta = terapeuta;
+        terapeuta->pacientesVinculados[terapeuta->qtdeAtendimento] = novoPaciente;
+        terapeuta->qtdeAtendimento++;
+
+        if(novoPaciente->terapeuta != NULL && consultorioDisponivel(consultorios)){
+            novoPaciente->situacao = 'A';
             insere(&arvore, novoPaciente, i + 1);
         }else {
-            // inserirFila(fila, novoPaciente);
+            novoPaciente->situacao = 'E';
+            inserirFila(filaDeEspera, novoPaciente);
         }
     }
+
+    imprime(arvore);
+    imprimeFila(filaDeEspera);
+    
+    arvore = atribuiFaltasPaciente(arvore);
+    arvore = atribuiFaltasTerapeuta(arvore);
 
     imprime(arvore);
 
@@ -635,6 +654,12 @@ Fila* criarFila(){
 
 }
 
+void imprimeFila(Fila *fila){
+    for(Paciente *paciente = fila->inicio; paciente != NULL; paciente = paciente->prox)
+        imprimePaciente(paciente);
+
+}
+
 void inserirFila(Fila* fila, Paciente* p){
     Paciente* novoPaciente = (Paciente*) malloc(sizeof(Paciente));
     strcpy(novoPaciente->nome,p->nome);
@@ -726,6 +751,7 @@ Paciente* geraPaciente(int id){
 void imprimePaciente(Paciente *paciente){
     printf("Nome: %s\n", paciente->nome);
     printf("Data de nascimento: %s\n", paciente->dtNascimento);
+    printf("Situacao: %c\n", paciente->situacao);
     printf("Total de sessoes: %d\n", paciente->totalSessoes);
     printf("Quantidade de faltas: %d\n", paciente->qtdFaltas);
     printf("Total de sessoes: %d\n", paciente->totalSessoes);
@@ -776,12 +802,49 @@ void gerenciaFaltasPaciente(Paciente* paciente, int faltou){
     }
 }
 
-void geraFaltaPaciente(Paciente* paciente){
+void geraFaltaPaciente(Paciente *paciente){
+    int numero = geraNumero(0,10);
+
+    if(numero <= 3){
+         faltaPaciente(paciente);
+    }
+
+}
+
+void faltaPaciente(Paciente* paciente){
     int qtdFaltas = geraNumero(0,6);
     paciente->qtdFaltas = qtdFaltas;
     if(qtdFaltas == 3){
         paciente->faltasConsecutivas = qtdFaltas;
     }
+}
+
+No* atribuiFaltasPaciente(No *arvore){
+    if(arvore != NULL){
+        for(int i = 0; i < arvore->qtdeChaves; i++)
+            geraFaltaPaciente(arvore->pacientes[i]);
+        
+        for(int i = 0; i < arvore->qtdeChaves + 1; i++)
+            atribuiFaltasPaciente(arvore->nos[i]);
+        
+    }
+    
+    return arvore;
+
+}
+
+No* atribuiFaltasTerapeuta(No *arvore){
+    if(arvore != NULL){
+        for(int i = 0; i < arvore->qtdeChaves; i++)
+            geraFaltaTerapeuta(arvore->pacientes[i]);
+        
+        for(int i = 0; i < arvore->qtdeChaves + 1; i++)
+            atribuiFaltasTerapeuta(arvore->nos[i]);
+        
+    }
+    
+    return arvore;
+
 }
 
 void consultaRealizada(Paciente* paciente){
@@ -842,17 +905,24 @@ void geraHorario(){
     segundo = geraNumero(segundo, 60);
 }
 
-int consultorioDisponivel(Consultorio* consultorios){
+int consultorioDisponivel(Consultorio** consultorios){
+    Consultorio *consultorio;
 
-    for(int cont = 0 ;cont < 6;cont++){
+    for(int cont = 0; cont < 6;cont++){
+        consultorio = consultorios[cont];
+
         for(int i = 0; i < 12; i++){
-            if(consultorios[cont].horarios[i] == 0){
-                consultorios[cont].horarios[i] = 1;
+            if(consultorio->horarios[i] == 0){
+                consultorio->horarios[i] = 1;
                 return 1;
             }
+
         }
+
     }
+
     return 0;
+
 }
 
 int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta){
@@ -934,7 +1004,7 @@ Terapeuta* buscaTerapeuta(Terapeuta* listaTerapeuta){
     return terapeuta;
 }
 
-void geraFaltaTerapeuta(Paciente *pa,Terapeuta* tp){
+void geraFaltaTerapeuta(Paciente *pa){
     int numero = geraNumero(0,10);
 
     if(numero == 1){
