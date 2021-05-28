@@ -99,7 +99,7 @@ void insereTerapeuta(Terapeuta* inicio, Terapeuta* novo);
 Terapeuta* iniciaListaTerapeuta();
 int geraNumero(int min,int max);
 void geraHorario();
-int disponibilidadeHorario(int hora);
+int disponibilidadeHorario(Consultorio* consultorio);
 int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta);
 void gerenciaAtendimentoTerapeuta(Paciente *pa,Terapeuta* tp, int situ);
 
