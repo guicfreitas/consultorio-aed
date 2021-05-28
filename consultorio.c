@@ -95,6 +95,7 @@ void geraDataNascimento(Paciente* paciente);
 void setSituacao(Paciente* paciente, char situacao);
 char getSituacao(Paciente* paciente);
 Terapeuta* geraTerapeuta(char classe);
+Terapeuta* buscaTerapeuta(terapeuta);
 void insereTerapeuta(Terapeuta* inicio, Terapeuta* novo);
 Terapeuta* iniciaListaTerapeuta();
 int geraNumero(int min,int max);
@@ -119,8 +120,15 @@ int main(){
     printf("Quantidade de pacientes a serem inseridos: ");
     scanf("%d", &qtdeElementos);
 
-    for(int i = 0; i < qtdeElementos; i++)
-        insere(&arvore, geraPaciente(i + 1), i + 1);
+    for(int i = 0; i < qtdeElementos; i++){
+        Paciente *novoPaciente = geraPaciente(i + 1);
+        novoPaciente->terapeuta = buscaTerapeuta(terapeuta);
+        if(novoPaciente->terapeuta != NULL){
+            insere(&arvore, novoPaciente, i + 1);
+        }else {
+            inserirFila(fila, novoPaciente);
+        }
+    }
 
     imprime(arvore);
 
