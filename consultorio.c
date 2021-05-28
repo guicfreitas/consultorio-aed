@@ -926,6 +926,11 @@ Terapeuta* buscaTerapeuta(Terapeuta* listaTerapeuta){
     while(terapeuta != NULL && disponibilidadeTerapeuta(terapeuta)){
         terapeuta = terapeuta->prox;
     }
+    if(terapeuta != NULL){
+        terapeuta->qtdeAtendimento += 1;
+        terapeuta->qtdeAtendidos += 1;
+    }
+    
     return terapeuta;
 }
 
