@@ -82,6 +82,7 @@ Paciente* retirarFila(Fila* fila);
 void liberarFila(Fila* fila);
 Paciente* geraPaciente(int id);
 void imprimePaciente(Paciente *paciente);
+void imprimeTerapeuta(Terapeuta* terapeuta);
 int ehCrianca(Paciente* paciente);
 int disponibilidadeTerapeuta(Terapeuta* terapeuta);
 void gerenciaFaltasPaciente(Paciente* paciente, int faltou);
@@ -95,13 +96,14 @@ void geraDataNascimento(Paciente* paciente);
 void setSituacao(Paciente* paciente, char situacao);
 char getSituacao(Paciente* paciente);
 Terapeuta* geraTerapeuta(char classe);
+Terapeuta* buscaTerapeuta(Terapeuta* listaTerapeuta);
 void insereTerapeuta(Terapeuta* inicio, Terapeuta* novo);
 Terapeuta* iniciaListaTerapeuta();
 int geraNumero(int min,int max);
 void geraHorario();
 int disponibilidadeHorario(Consultorio* consultorio);
 int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta);
-void gerenciaAtendimentoTerapeuta(Paciente *pa,Terapeuta* tp, int situ);
+void geraFaltaTerapeuta(Paciente *pa,Terapeuta* tp);
 
 int main(){
     srand(time(NULL));
@@ -119,8 +121,15 @@ int main(){
     printf("Quantidade de pacientes a serem inseridos: ");
     scanf("%d", &qtdeElementos);
 
-    for(int i = 0; i < qtdeElementos; i++)
-        insere(&arvore, geraPaciente(i + 1), i + 1);
+    for(int i = 0; i < qtdeElementos; i++){
+        Paciente *novoPaciente = geraPaciente(i + 1);
+        novoPaciente->terapeuta = buscaTerapeuta(terapeuta);
+        if(novoPaciente->terapeuta != NULL && consultorioDisponivel(*consultorios)){
+            insere(&arvore, novoPaciente, i + 1);
+        }else {
+            // inserirFila(fila, novoPaciente);
+        }
+    }
 
     imprime(arvore);
 
@@ -721,7 +730,14 @@ void imprimePaciente(Paciente *paciente){
     printf("Quantidade de faltas: %d\n", paciente->qtdFaltas);
     printf("Total de sessoes: %d\n", paciente->totalSessoes);
     printf("Faltas consecutivas: %d\n", paciente->faltasConsecutivas);
+    imprimeTerapeuta(paciente->terapeuta);
 
+}
+
+void imprimeTerapeuta(Terapeuta* terapeuta){
+    printf("TERAPEUTA DO PACIENTE\n");
+    printf("Nome: %s\n", terapeuta->nome);
+    printf("Classe: %c\n", terapeuta->classe);
 }
 
 int ehCrianca(Paciente* paciente){
@@ -826,14 +842,17 @@ void geraHorario(){
     segundo = geraNumero(segundo, 60);
 }
 
-int disponibilidadeHorario(Consultorio* consultorio){
+int consultorioDisponivel(Consultorio* consultorios){
 
-    for(int cont = 0 ;cont < 12;cont++){
-        if(consultorio->horarios[cont] == 0){
-            return 0;
-        } 
+    for(int cont = 0 ;cont < 6;cont++){
+        for(int i = 0; i < 12; i++){
+            if(consultorios[cont].horarios[i] == 0){
+                consultorios[cont].horarios[i] = 1;
+                return 1;
+            }
+        }
     }
-    return 1;
+    return 0;
 }
 
 int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta){
@@ -907,6 +926,11 @@ Terapeuta* buscaTerapeuta(Terapeuta* listaTerapeuta){
     while(terapeuta != NULL && disponibilidadeTerapeuta(terapeuta)){
         terapeuta = terapeuta->prox;
     }
+    if(terapeuta != NULL){
+        terapeuta->qtdeAtendimento += 1;
+        terapeuta->qtdeAtendidos += 1;
+    }
+    
     return terapeuta;
 }
 
