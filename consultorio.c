@@ -107,8 +107,10 @@ int geraNumero(int min,int max);
 void geraHorario();
 int disponibilidadeHorario(Consultorio* consultorio);
 int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta);
-void geraFaltaTerapeuta(Paciente *pa);
+int geraFaltaTerapeuta(Paciente *pa);
 int consultorioDisponivel(Consultorio** consultorios);
+void sessaoConsulta(Paciente* paciente);
+
 
 int main(){
     srand(time(NULL));
@@ -147,10 +149,14 @@ int main(){
     imprime(arvore);
     imprimeFila(filaDeEspera);
     
-    arvore = atribuiFaltasPaciente(arvore);
-    arvore = atribuiFaltasTerapeuta(arvore);
+    for(int cont = 0 ;cont < 20;cont++){
+        arvore = atribuiFaltasPaciente(arvore);
+        //arvore = atribuiFaltasTerapeuta(arvore);
+    }
 
     imprime(arvore);
+
+
 
     printf("Quantidade de pacientes a serem removidos: ");
     scanf("%d", &qtdeElementos);
@@ -788,25 +794,28 @@ int ehCrianca(Paciente* paciente){
     return 0;
 }
 
-void gerenciaFaltasPaciente(Paciente* paciente, int faltou){
+void gerenciaFaltasPaciente(Paciente* paciente,int faltou){
     // para registrar presença: faltou = 0
     // para registrar falta: faltou = 1
     if(faltou == 1){
         paciente->qtdFaltas++;
         paciente->faltasConsecutivas++;
-        if(paciente->faltasConsecutivas >= 3 || paciente->qtdFaltas >= 5){  // desistente
-            // TODO: chamar função que remove ou retornar algum valor
-        }
     }else if(faltou == 0){
         paciente->faltasConsecutivas = 0;
+    }
+
+    if(paciente->faltasConsecutivas == 3 || paciente->qtdFaltas == 5){
+        paciente->situacao = 'F';
     }
 }
 
 void geraFaltaPaciente(Paciente *paciente){
     int numero = geraNumero(0,10);
 
-    if(numero <= 3){
-         faltaPaciente(paciente);
+    if(numero <= 1){
+        gerenciaFaltasPaciente(paciente,1);
+    }else{
+        gerenciaFaltasPaciente(paciente,0);
     }
 
 }
@@ -816,13 +825,20 @@ void faltaPaciente(Paciente* paciente){
     paciente->qtdFaltas = qtdFaltas;
     if(qtdFaltas == 3){
         paciente->faltasConsecutivas = qtdFaltas;
+        paciente->situacao = 'F';
     }
+
+    if(paciente->qtdFaltas == 5){
+        paciente->situacao = 'F';
+    }
+
 }
 
 No* atribuiFaltasPaciente(No *arvore){
     if(arvore != NULL){
         for(int i = 0; i < arvore->qtdeChaves; i++)
-            geraFaltaPaciente(arvore->pacientes[i]);
+            sessaoConsulta(arvore->pacientes[i]);
+
         
         for(int i = 0; i < arvore->qtdeChaves + 1; i++)
             atribuiFaltasPaciente(arvore->nos[i]);
@@ -846,6 +862,8 @@ No* atribuiFaltasTerapeuta(No *arvore){
     return arvore;
 
 }
+
+
 
 void consultaRealizada(Paciente* paciente){
     paciente->totalSessoes--;
@@ -1004,13 +1022,24 @@ Terapeuta* buscaTerapeuta(Terapeuta* listaTerapeuta){
     return terapeuta;
 }
 
-void geraFaltaTerapeuta(Paciente *pa){
+int geraFaltaTerapeuta(Paciente *pa){
     int numero = geraNumero(0,10);
 
     if(numero == 1){
          pa->totalSessoes = pa->totalSessoes + 1;
+         return 1;
     }
 
+    return 0;
+
+}
+
+void sessaoConsulta(Paciente* paciente){
+    if(geraFaltaTerapeuta(paciente) != 1){
+        geraFaltaPaciente(paciente);
+    }
+
+   
 }
 // // Gerou 40 terapeutas
     // Gerou 600 pacientes
