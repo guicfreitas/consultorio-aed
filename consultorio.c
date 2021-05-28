@@ -826,12 +826,14 @@ void geraHorario(){
     segundo = geraNumero(segundo, 60);
 }
 
-int disponibilidadeHorario(int hora){
-    if(hora <= 9 || hora > 20){
-        printf("Consultório fechado");
-        return 1;
+int disponibilidadeHorario(Consultorio* consultorio){
+
+    for(int cont = 0 ;cont < 12;cont++){
+        if(consultorio->horarios[cont] == 0){
+            return 0;
+        } 
     }
-    return 0;
+    return 1;
 }
 
 int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta){
@@ -916,7 +918,6 @@ void geraFaltaTerapeuta(Paciente *pa,Terapeuta* tp){
     }
 
 }
-
 // // Gerou 40 terapeutas
     // Gerou 600 pacientes
 
