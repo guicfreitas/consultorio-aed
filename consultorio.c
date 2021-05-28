@@ -747,23 +747,6 @@ int ehCrianca(Paciente* paciente){
     return 0;
 }
 
-int disponibilidadeTerapeuta(Terapeuta* terapeuta){
-
-    if(terapeuta->classe == 'A'){
-        if(terapeuta->qtdeAtendimento == 3){
-            //TODO: nao tem disponibilidade e tem que passar pra outro
-            return 1;
-        }
-    }else{
-         if(terapeuta->qtdeAtendimento == 5){
-            //TODO: nao tem disponibilidade e tem que passar pra outro
-            return 1;
-        }
-    }
-    return 0;
-    
-}
-
 void gerenciaFaltasPaciente(Paciente* paciente, int faltou){
     // para registrar presença: faltou = 0
     // para registrar falta: faltou = 1
@@ -861,6 +844,7 @@ int checaTerapeutaAlunoProfissional(Terapeuta* terapeuta){
     }
 
 }
+
 int disponibilidadeTerapeuta(Terapeuta* terapeuta){
     int tp;
     tp = checaTerapeutaAlunoProfissional(terapeuta);
@@ -890,6 +874,9 @@ Terapeuta* geraTerapeuta(char classe){
     novoTerapeuta->qtdeSessoes = 0;
     novoTerapeuta->classe = classe;
     novoTerapeuta->prox = NULL;
+    for (int i = 0; i < 5; i++) {
+        novoTerapeuta->pacientesVinculados[i] = NULL;
+    }
 
     return novoTerapeuta;
 }
@@ -910,6 +897,14 @@ Terapeuta* iniciaListaTerapeuta(){
         }else{
             insereTerapeuta(terapeuta, geraTerapeuta('A'));
         }
+    }
+    return terapeuta;
+}
+
+Terapeuta* buscaTerapeuta(Terapeuta* listaTerapeuta){
+    Terapeuta* terapeuta = listaTerapeuta;
+    while(terapeuta != NULL && disponibilidadeTerapeuta(terapeuta)){
+        terapeuta = terapeuta->prox;
     }
     return terapeuta;
 }
