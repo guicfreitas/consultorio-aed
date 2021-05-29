@@ -133,14 +133,12 @@ int main(){
         Terapeuta *terapeuta = buscaTerapeuta(terapeutas);
         Paciente *novoPaciente = geraPaciente(i + 1);
 
-        novoPaciente->terapeuta = terapeuta;
-        terapeuta->pacientesVinculados[terapeuta->qtdeAtendimento] = novoPaciente;
-        terapeuta->qtdeAtendimento++;
-
-        if(novoPaciente->terapeuta != NULL && consultorioDisponivel(consultorios)){
+        if(terapeuta != NULL && consultorioDisponivel(consultorios)){
+            novoPaciente->terapeuta = terapeuta;
+            terapeuta->pacientesVinculados[terapeuta->qtdeAtendimento++] = novoPaciente;
             novoPaciente->situacao = 'A';
             insere(&arvore, novoPaciente, i + 1);
-        }else {
+        }else{
             novoPaciente->situacao = 'E';
             inserirFila(filaDeEspera, novoPaciente);
         }
@@ -157,17 +155,17 @@ int main(){
     imprime(arvore);
 
 
-    printf("Quantidade de pacientes a serem removidos: ");
-    scanf("%d", &qtdeElementos);
-
-    for(int i = 0; i < qtdeElementos; i++){
-        printf("Chave a ser removida: ");
-        scanf("%d", &chave);
-        arvore = elimina(&arvore, chave);
-
-    }
-
-    imprime(arvore);
+//    printf("Quantidade de pacientes a serem removidos: ");
+//    scanf("%d", &qtdeElementos);
+//
+//    for(int i = 0; i < qtdeElementos; i++){
+//        printf("Chave a ser removida: ");
+//        scanf("%d", &chave);
+//        arvore = elimina(&arvore, chave);
+//
+//    }
+//
+//    imprime(arvore);
 
     return 0;
 }
@@ -300,9 +298,9 @@ No* divide(No **pai, int indiceFilho){
 void imprime(No *arvore){
     if(arvore != NULL){
         for(int i = 0; i < arvore->qtdeChaves; i++){
-            printf("Paciente %d\n", arvore->chaves[i]);
+//            printf("Paciente %d\n", arvore->chaves[i]);
             imprimePaciente(arvore->pacientes[i]);
-            printf("\n");
+//            printf("\n");
 
         }
         
@@ -760,22 +758,24 @@ Paciente* geraPaciente(int id){
 }
 
 void imprimePaciente(Paciente *paciente){
-    printf("Nome: %s\n", paciente->nome);
-    printf("Data de nascimento: %s\n", paciente->dtNascimento);
-    printf("Situacao: %c\n", paciente->situacao);
-    printf("Total de sessoes: %d\n", paciente->totalSessoes);
-    printf("Quantidade de faltas: %d\n", paciente->qtdFaltas);
-    printf("Total de sessoes: %d\n", paciente->totalSessoes);
-    printf("Faltas consecutivas: %d\n", paciente->faltasConsecutivas);
-    if(paciente->terapeuta != NULL){
-        imprimeTerapeuta(paciente->terapeuta);
+    if(paciente->situacao != 'F') {
+        printf("Paciente %d\n", paciente->id);
+        printf("Nome: %s\t", paciente->nome);
+        printf("Data de nascimento: %s\t", paciente->dtNascimento);
+        printf("Situacao: %c\n", paciente->situacao);
+        printf("Sessoes restantes: %-3d", paciente->totalSessoes);
+        printf("Faltas totais: %-3d", paciente->qtdFaltas);
+        printf("Faltas consecutivas: %d\n", paciente->faltasConsecutivas);
+        if (paciente->terapeuta != NULL) {
+            imprimeTerapeuta(paciente->terapeuta);
+        }
+        printf("\n");
     }
 }
 
 void imprimeTerapeuta(Terapeuta* terapeuta){
-    printf("TERAPEUTA DO PACIENTE\n");
-    printf("Nome: %s\n", terapeuta->nome);
-    printf("Classe: %c\n", terapeuta->classe);
+    printf("Terapeuta:\t%-12s", terapeuta->nome);
+    printf("Classe:\t%c\n", terapeuta->classe);
 }
 
 int ehCrianca(Paciente* paciente){
@@ -806,18 +806,23 @@ void gerenciaFaltasPaciente(Paciente* paciente,Fila* fila,No** arvore,int faltou
     if(faltou == 1){
         paciente->qtdFaltas++;
         paciente->faltasConsecutivas++;
+        paciente->totalSessoes--;
     }else if(faltou == 0){
         paciente->faltasConsecutivas = 0;
+        paciente->totalSessoes--;
     }
 
     if(paciente->faltasConsecutivas == 3 || paciente->qtdFaltas == 5){
         paciente->situacao = 'F';
         Terapeuta* terapeutaDispo = paciente->terapeuta;
-        *arvore = elimina(arvore,paciente->id);
+        terapeutaDispo->pacientesVinculados[--terapeutaDispo->qtdeAtendimento] = NULL;
+
+//        *arvore = elimina(arvore,paciente->id);
         Paciente* pacienteNaFila = retirarFila(fila);
         if(pacienteNaFila != NULL){
-           pacienteNaFila->situacao = 'A';
+            pacienteNaFila->situacao = 'A';
             pacienteNaFila->terapeuta = terapeutaDispo;
+            terapeutaDispo->pacientesVinculados[terapeutaDispo->qtdeAtendimento++] = pacienteNaFila;
             insere(arvore,pacienteNaFila,pacienteNaFila->id);
             
         }
@@ -1031,10 +1036,10 @@ Terapeuta* buscaTerapeuta(Terapeuta* listaTerapeuta){
     while(terapeuta != NULL && disponibilidadeTerapeuta(terapeuta)){
         terapeuta = terapeuta->prox;
     }
-    if(terapeuta != NULL){
-        terapeuta->qtdeAtendimento += 1;
-        terapeuta->qtdeAtendidos += 1;
-    }
+//    if(terapeuta != NULL){
+//        terapeuta->qtdeAtendimento += 1;
+//        terapeuta->qtdeAtendidos += 1;
+//    }
     
     return terapeuta;
 }
