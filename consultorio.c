@@ -84,6 +84,7 @@ void liberarFila(Fila* fila);
 Paciente* geraPaciente(int id);
 void imprimePaciente(Paciente *paciente);
 void imprimeTerapeuta(Terapeuta* terapeuta);
+void imprimePacienteDoTerapeuta(Terapeuta* terapeuta);
 int ehCrianca(Paciente* paciente);
 int disponibilidadeTerapeuta(Terapeuta* terapeuta);
 void gerenciaFaltasPaciente(Paciente* paciente,Fila* fila,No** arvore,int faltou);
@@ -144,16 +145,17 @@ int main(){
         }
     }
 
-    imprime(arvore);
+//    imprime(arvore);
     imprimeFila(filaDeEspera);
     
     for(int cont = 0 ; cont < 20; cont++){
         arvore = atribuiFaltasPaciente(&arvore,filaDeEspera);
         //arvore = atribuiFaltasTerapeuta(arvore);
     }
-
+    printf("Imprimindo pacientes em atendimento\n");
     imprime(arvore);
-
+    printf("Imprimindo pacientes de cada terapeuta\n");
+    imprimePacienteDoTerapeuta(terapeutas);
 
 //    printf("Quantidade de pacientes a serem removidos: ");
 //    scanf("%d", &qtdeElementos);
@@ -658,9 +660,16 @@ Fila* criarFila(){
 }
 
 void imprimeFila(Fila *fila) {
+    printf("Clientes na fila de espera\n");
     if(!filaVazia(fila)){
         for (Paciente *paciente = fila->inicio; paciente != NULL; paciente = paciente->prox){
-            imprimePaciente(paciente);
+            printf("Paciente %d\n", paciente->id);
+            printf("Nome: %s\t", paciente->nome);
+            printf("Data de nascimento: %s\t", paciente->dtNascimento);
+            printf("Situacao: %c\n", paciente->situacao);
+            printf("Sessoes restantes: %-3d", paciente->totalSessoes);
+            printf("Faltas totais: %-3d", paciente->qtdFaltas);
+            printf("Faltas consecutivas: %d\n", paciente->faltasConsecutivas);
             printf("\n");
         }
 
@@ -758,7 +767,7 @@ Paciente* geraPaciente(int id){
 }
 
 void imprimePaciente(Paciente *paciente){
-    if(paciente->situacao != 'F') {
+    if(paciente->situacao == 'A') {
         printf("Paciente %d\n", paciente->id);
         printf("Nome: %s\t", paciente->nome);
         printf("Data de nascimento: %s\t", paciente->dtNascimento);
@@ -776,6 +785,40 @@ void imprimePaciente(Paciente *paciente){
 void imprimeTerapeuta(Terapeuta* terapeuta){
     printf("Terapeuta:\t%-12s", terapeuta->nome);
     printf("Classe:\t%c\n", terapeuta->classe);
+}
+
+void imprimePacienteDoTerapeuta(Terapeuta* terapeutas){
+    Terapeuta* terapeuta = terapeutas;
+    while(terapeuta != NULL){
+        printf("Terapeuta %s\n", terapeuta->nome);
+        if(checaTerapeutaAlunoProfissional(terapeuta) == 0){
+            for (int i = 0; i < 2; i++) {
+                if(terapeuta->pacientesVinculados[i] != NULL && terapeuta->pacientesVinculados[i]->situacao != 'F') {
+                    printf("Paciente %d\n", terapeuta->pacientesVinculados[i]->id);
+                    printf("Nome: %s\t", terapeuta->pacientesVinculados[i]->nome);
+                    printf("Data de nascimento: %s\t", terapeuta->pacientesVinculados[i]->dtNascimento);
+                    printf("Situacao: %c\n", terapeuta->pacientesVinculados[i]->situacao);
+                    printf("Sessoes restantes: %-3d", terapeuta->pacientesVinculados[i]->totalSessoes);
+                    printf("Faltas totais: %-3d", terapeuta->pacientesVinculados[i]->qtdFaltas);
+                    printf("Faltas consecutivas: %d\n", terapeuta->pacientesVinculados[i]->faltasConsecutivas);
+                }
+            }
+        }else{
+            for (int i = 0; i < 5; i++) {
+                if(terapeuta->pacientesVinculados[i] != NULL && terapeuta->pacientesVinculados[i]->situacao != 'F') {
+                    printf("Paciente %d\n", terapeuta->pacientesVinculados[i]->id);
+                    printf("Nome: %s\t", terapeuta->pacientesVinculados[i]->nome);
+                    printf("Data de nascimento: %s\t", terapeuta->pacientesVinculados[i]->dtNascimento);
+                    printf("Situacao: %c\n", terapeuta->pacientesVinculados[i]->situacao);
+                    printf("Sessoes restantes: %-3d", terapeuta->pacientesVinculados[i]->totalSessoes);
+                    printf("Faltas totais: %-3d", terapeuta->pacientesVinculados[i]->qtdFaltas);
+                    printf("Faltas consecutivas: %d\n", terapeuta->pacientesVinculados[i]->faltasConsecutivas);
+                }
+            }
+        }
+        printf("\n");
+        terapeuta = terapeuta->prox;
+    }
 }
 
 int ehCrianca(Paciente* paciente){
@@ -861,12 +904,12 @@ No* atribuiFaltasPaciente(No **arvore,Fila* fila){
         for(int i = 0; i < (*arvore)->qtdeChaves; i++)
             sessaoConsulta((*arvore)->pacientes[i],fila,arvore);
 
-        
+
         for(int i = 0; i < (*arvore)->qtdeChaves + 1; i++)
             atribuiFaltasPaciente(&((*arvore)->nos[i]),fila);
-        
+
     }
-    
+
     return *arvore;
 
 }
