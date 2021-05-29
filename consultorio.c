@@ -660,9 +660,11 @@ Fila* criarFila(){
 
 }
 
-void imprimeFila(Fila *fila){
-    for(Paciente *paciente = fila->inicio; paciente != NULL; paciente = paciente->prox)
+void imprimeFila(Fila *fila) {
+    for (Paciente *paciente = fila->inicio; paciente != NULL; paciente = paciente->prox){
         imprimePaciente(paciente);
+        printf("\n");
+    }
 
 }
 
@@ -762,8 +764,9 @@ void imprimePaciente(Paciente *paciente){
     printf("Quantidade de faltas: %d\n", paciente->qtdFaltas);
     printf("Total de sessoes: %d\n", paciente->totalSessoes);
     printf("Faltas consecutivas: %d\n", paciente->faltasConsecutivas);
-    imprimeTerapeuta(paciente->terapeuta);
-
+    if(paciente->terapeuta != NULL){
+        imprimeTerapeuta(paciente->terapeuta);
+    }
 }
 
 void imprimeTerapeuta(Terapeuta* terapeuta){
