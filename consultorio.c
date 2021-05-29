@@ -157,7 +157,6 @@ int main(){
     imprime(arvore);
 
 
-
     printf("Quantidade de pacientes a serem removidos: ");
     scanf("%d", &qtdeElementos);
 
@@ -330,7 +329,7 @@ No* elimina(No **arvore, int chave){
     
     if(indiceChave != -1){// a chave esta presente no no
         if(ehFolha(*arvore)){
-            *arvore = removeChave(arvore, chave);
+            removeChave(arvore, chave);
 
         }else{// a chave esta presente em um no interno
             // troca a chave a ser removida pelo maior dos menores
@@ -521,7 +520,7 @@ No* removeChave(No **no, int chave){
     
     if((*no)->qtdeChaves == 0)
         return NULL;
-        
+
     else
         return *no;
     
@@ -661,9 +660,12 @@ Fila* criarFila(){
 }
 
 void imprimeFila(Fila *fila) {
-    for (Paciente *paciente = fila->inicio; paciente != NULL; paciente = paciente->prox){
-        imprimePaciente(paciente);
-        printf("\n");
+    if(!filaVazia(fila)){
+        for (Paciente *paciente = fila->inicio; paciente != NULL; paciente = paciente->prox){
+            imprimePaciente(paciente);
+            printf("\n");
+        }
+
     }
 
 }
@@ -809,9 +811,13 @@ void gerenciaFaltasPaciente(Paciente* paciente,Fila* fila,No** arvore,int faltou
 
     if(paciente->faltasConsecutivas == 3 || paciente->qtdFaltas == 5){
         paciente->situacao = 'F';
-        elimina(arvore,paciente->id);
-        Paciente* pacienteNaFila = retirarFila(fila);
-        insere(arvore,pacienteNaFila,pacienteNaFila->id);
+        *arvore = elimina(arvore,paciente->id);
+
+        if(!filaVazia(fila)){
+            Paciente* pacienteNaFila = retirarFila(fila);
+            insere(arvore,pacienteNaFila,pacienteNaFila->id);
+        }
+
     }
 
 }
