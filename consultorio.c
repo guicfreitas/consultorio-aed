@@ -669,11 +669,11 @@ void imprimeFila(Fila *fila){
 void inserirFila(Fila* fila, Paciente* p){
     Paciente* novoPaciente = (Paciente*) malloc(sizeof(Paciente));
     strcpy(novoPaciente->nome,p->nome);
-    strcpy(novoPaciente->dtNascimento,novoPaciente->dtNascimento);
-    novoPaciente->situacao = novoPaciente->situacao;
-    novoPaciente->totalSessoes = novoPaciente->totalSessoes;
-    novoPaciente->qtdFaltas = novoPaciente->qtdFaltas;
-    novoPaciente->faltasConsecutivas = novoPaciente->faltasConsecutivas;
+    strcpy(novoPaciente->dtNascimento,p->dtNascimento);
+    novoPaciente->situacao = p->situacao;
+    novoPaciente->totalSessoes = p->totalSessoes;
+    novoPaciente->qtdFaltas = p->qtdFaltas;
+    novoPaciente->faltasConsecutivas = p->faltasConsecutivas;
     
     
     if(fila->inicio == NULL){
@@ -839,7 +839,7 @@ void faltaPaciente(Paciente* paciente){
 }
 
 No* atribuiFaltasPaciente(No **arvore,Fila* fila){
-    if(arvore != NULL){
+    if(*arvore != NULL){
         for(int i = 0; i < (*arvore)->qtdeChaves; i++)
             sessaoConsulta((*arvore)->pacientes[i],fila,arvore);
 
