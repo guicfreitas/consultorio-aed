@@ -672,6 +672,7 @@ void imprimeFila(Fila *fila) {
 
 void inserirFila(Fila* fila, Paciente* p){
     Paciente* novoPaciente = (Paciente*) malloc(sizeof(Paciente));
+    novoPaciente->id = p->id;
     strcpy(novoPaciente->nome,p->nome);
     strcpy(novoPaciente->dtNascimento,p->dtNascimento);
     novoPaciente->situacao = p->situacao;
@@ -716,7 +717,7 @@ Paciente* retirarFila(Fila* fila){
         pacienteTemp = fila->inicio;
         Paciente* pacienteRetirado = pacienteTemp;
         fila->inicio = fila->inicio->prox;
-        free(pacienteTemp);
+        //free(pacienteTemp);
         
         return pacienteRetirado;
         
@@ -811,9 +812,16 @@ void gerenciaFaltasPaciente(Paciente* paciente,Fila* fila,No** arvore,int faltou
 
     if(paciente->faltasConsecutivas == 3 || paciente->qtdFaltas == 5){
         paciente->situacao = 'F';
+        Terapeuta* terapeutaDispo = paciente->terapeuta;
         *arvore = elimina(arvore,paciente->id);
         Paciente* pacienteNaFila = retirarFila(fila);
-        insere(arvore,pacienteNaFila,pacienteNaFila->id);
+        if(pacienteNaFila != NULL){
+           pacienteNaFila->situacao = 'A';
+            pacienteNaFila->terapeuta = terapeutaDispo;
+            insere(arvore,pacienteNaFila,pacienteNaFila->id);
+            
+        }
+        
     }
 
 }
