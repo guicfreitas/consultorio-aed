@@ -809,7 +809,7 @@ void gerenciaFaltasPaciente(Paciente* paciente,Fila* fila,No** arvore,int faltou
 
     if(paciente->faltasConsecutivas == 3 || paciente->qtdFaltas == 5){
         paciente->situacao = 'F';
-        elimina(arvore,paciente->id);
+        *arvore = elimina(arvore,paciente->id);
         Paciente* pacienteNaFila = retirarFila(fila);
         insere(arvore,pacienteNaFila,pacienteNaFila->id);
     }
