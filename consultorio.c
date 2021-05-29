@@ -812,12 +812,8 @@ void gerenciaFaltasPaciente(Paciente* paciente,Fila* fila,No** arvore,int faltou
     if(paciente->faltasConsecutivas == 3 || paciente->qtdFaltas == 5){
         paciente->situacao = 'F';
         *arvore = elimina(arvore,paciente->id);
-
-        if(!filaVazia(fila)){
-            Paciente* pacienteNaFila = retirarFila(fila);
-            insere(arvore,pacienteNaFila,pacienteNaFila->id);
-        }
-
+        Paciente* pacienteNaFila = retirarFila(fila);
+        insere(arvore,pacienteNaFila,pacienteNaFila->id);
     }
 
 }
